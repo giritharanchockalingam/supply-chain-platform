@@ -5,8 +5,8 @@ import { Ratelimit } from '@upstash/ratelimit'
 // Free tier: 500K commands/month, 256MB storage
 // Used for: rate limiting, caching, session state
 
-const redisUrl = process.env.UPSTASH_REDIS_REST_URL
-const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN
 
 export const redis = redisUrl && redisToken
   ? new Redis({ url: redisUrl, token: redisToken })
