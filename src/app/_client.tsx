@@ -23,6 +23,7 @@ import {
   Search,
   Settings,
   Brain,
+  Layers,
 } from 'lucide-react';
 
 const AICommandCenter = dynamic(() => import('@/components/ai/AICommandCenter'), { ssr: false });
@@ -155,6 +156,29 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
               >
                 <Brain size={20} className="flex-shrink-0" />
                 {sidebarOpen && <span className="text-sm font-medium">AI Command Center</span>}
+              </Link>
+            </div>
+          </div>
+
+          {/* Architecture */}
+          <div>
+            {sidebarOpen && (
+              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+                Architecture
+              </h2>
+            )}
+            <div className="space-y-2">
+              <Link
+                href="/architecture"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname.startsWith('/architecture')
+                    ? 'bg-emerald-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-800'
+                }`}
+                title="TOGAF Architecture"
+              >
+                <Layers size={20} className="flex-shrink-0" />
+                {sidebarOpen && <span className="text-sm font-medium">TOGAF Enterprise</span>}
               </Link>
             </div>
           </div>
