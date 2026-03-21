@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { useAIAssistant, getQuickActions, type AIMessage } from '@/hooks/useAIAssistant';
 import {
   Brain, Send, Mic, MicOff, X, Minimize2, Maximize2,
@@ -14,6 +14,96 @@ interface AICommandCenterProps {
   selectedTruckId?: string;
   selectedDockId?: string;
   selectedProductId?: string;
+}
+
+// ============================================
+// Lightweight Markdown Renderer for Chat
+// ============================================
+function renderChatMarkdown(text: string, isUser: boolean): React.ReactNode {
+  // Split into lines and process
+  const lines = text.split('\n');
+  const elements: React.ReactNode[] = [];
+  let key = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+
+    // Skip markdown table rows (|---|---| or | header | header |)
+    if (/^\s*\|[\s\-|:]+\|?\s*$/.test(line)) continue;
+    if (/^\s*\|.*\|.*\|/.test(line) && line.includes('---')) continue;
+
+    // Strip markdown headers (### Header → just the text bold)
+    const headerMatch = line.match(/^#{1,4}\s+(.*)$/);
+    if (headerMatch) {
+      if (elements.length > 0) elements.push(<div key={key++} className="h-2" />);
+      elements.push(
+        <div key={key++} className="font-semibold text-[13px]">
+          {renderInlineMarkdown(headerMatch[1], isUser)}
+        </div>
+      );
+      continue;
+    }
+
+    // Convert markdown table rows to simple bullet lines
+    if (/^\s*\|/.test(line)) {
+      const cells = line.split('|').filter(c => c.trim()).map(c => c.trim());
+      if (cells.length > 1) {
+        line = '• ' + cells.join(' — ');
+      }
+    }
+
+    // Bullet points (-, *, •, or numbered)
+    const bulletMatch = line.match(/^\s*[-*•]\s+(.*)$/) || line.match(/^\s*\d+\.\s+(.*)$/);
+    if (bulletMatch) {
+      elements.push(
+        <div key={key++} className="flex gap-1.5 ml-1">
+          <span className="text-blue-400 flex-shrink-0">•</span>
+          <span>{renderInlineMarkdown(bulletMatch[1], isUser)}</span>
+        </div>
+      );
+      continue;
+    }
+
+    // Empty line = paragraph break
+    if (line.trim() === '') {
+      elements.push(<div key={key++} className="h-1.5" />);
+      continue;
+    }
+
+    // Regular text line
+    elements.push(
+      <div key={key++}>{renderInlineMarkdown(line, isUser)}</div>
+    );
+  }
+
+  return <>{elements}</>;
+}
+
+function renderInlineMarkdown(text: string, isUser: boolean): React.ReactNode {
+  // Process **bold** and *italic* inline
+  const parts: React.ReactNode[] = [];
+  let remaining = text;
+  let partKey = 0;
+
+  while (remaining.length > 0) {
+    // Bold: **text**
+    const boldMatch = remaining.match(/^([\s\S]*?)\*\*(.+?)\*\*([\s\S]*)/);
+    if (boldMatch) {
+      if (boldMatch[1]) parts.push(<span key={partKey++}>{boldMatch[1]}</span>);
+      parts.push(
+        <strong key={partKey++} className={isUser ? 'font-bold' : 'font-semibold text-gray-900'}>
+          {boldMatch[2]}
+        </strong>
+      );
+      remaining = boldMatch[3];
+      continue;
+    }
+    // No more matches
+    parts.push(<span key={partKey++}>{remaining}</span>);
+    break;
+  }
+
+  return <>{parts}</>;
 }
 
 // ============================================
@@ -38,7 +128,9 @@ function MessageBubble({ message }: { message: AIMessage }) {
               : 'bg-gray-100 text-gray-800 rounded-bl-md'
           }`}
         >
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          <div className="space-y-0.5">
+            {isUser ? message.content : renderChatMarkdown(message.content, isUser)}
+          </div>
         </div>
 
         {/* Metadata badges */}

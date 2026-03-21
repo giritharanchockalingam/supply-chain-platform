@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { useAIAssistant, getQuickActions, type AIMessage } from '@/hooks/useAIAssistant';
 import {
   Brain, Send, Mic, MicOff, Sparkles, Loader2, Bot, User,
@@ -8,6 +8,73 @@ import {
   Shield, Truck, Package, AlertTriangle, CheckCircle2,
   Clock, Activity, Server,
 } from 'lucide-react';
+
+// ============================================
+// Lightweight Markdown Renderer for Chat
+// ============================================
+function renderChatContent(text: string, isUser: boolean): React.ReactNode {
+  const lines = text.split('\n');
+  const elements: React.ReactNode[] = [];
+  let key = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+
+    // Skip markdown table separator rows
+    if (/^\s*\|[\s\-|:]+\|?\s*$/.test(line)) continue;
+    if (/^\s*\|.*\|.*\|/.test(line) && line.includes('---')) continue;
+
+    // Strip markdown headers → bold text
+    const headerMatch = line.match(/^#{1,4}\s+(.*)$/);
+    if (headerMatch) {
+      if (elements.length > 0) elements.push(<div key={key++} className="h-2" />);
+      elements.push(
+        <div key={key++} className="font-semibold">{renderBold(headerMatch[1], isUser)}</div>
+      );
+      continue;
+    }
+
+    // Convert markdown table rows to bullet lines
+    if (/^\s*\|/.test(line)) {
+      const cells = line.split('|').filter(c => c.trim()).map(c => c.trim());
+      if (cells.length > 1) line = '• ' + cells.join(' — ');
+    }
+
+    // Bullet points
+    const bulletMatch = line.match(/^\s*[-*•]\s+(.*)$/) || line.match(/^\s*\d+\.\s+(.*)$/);
+    if (bulletMatch) {
+      elements.push(
+        <div key={key++} className="flex gap-2 ml-1">
+          <span className="text-blue-400 flex-shrink-0">•</span>
+          <span>{renderBold(bulletMatch[1], isUser)}</span>
+        </div>
+      );
+      continue;
+    }
+
+    if (line.trim() === '') { elements.push(<div key={key++} className="h-1.5" />); continue; }
+    elements.push(<div key={key++}>{renderBold(line, isUser)}</div>);
+  }
+  return <>{elements}</>;
+}
+
+function renderBold(text: string, isUser: boolean): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  let remaining = text;
+  let k = 0;
+  while (remaining.length > 0) {
+    const m = remaining.match(/^([\s\S]*?)\*\*(.+?)\*\*([\s\S]*)/);
+    if (m) {
+      if (m[1]) parts.push(<span key={k++}>{m[1]}</span>);
+      parts.push(<strong key={k++} className={isUser ? 'font-bold' : 'font-semibold text-gray-900'}>{m[2]}</strong>);
+      remaining = m[3];
+      continue;
+    }
+    parts.push(<span key={k++}>{remaining}</span>);
+    break;
+  }
+  return <>{parts}</>;
+}
 
 // ============================================
 // Message Component
@@ -31,7 +98,9 @@ function Message({ message }: { message: AIMessage }) {
               : 'bg-white text-gray-800 rounded-bl-md border border-gray-100'
           }`}
         >
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          <div className="space-y-0.5">
+            {isUser ? message.content : renderChatContent(message.content, isUser)}
+          </div>
         </div>
         {meta && !isUser && (
           <div className="flex flex-wrap gap-2 mt-2 px-1">
