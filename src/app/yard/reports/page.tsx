@@ -1,19 +1,64 @@
 'use client';
 
+import { useMemo } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Calendar, Download, Filter } from 'lucide-react';
-
-const dailyData = [
-  { date: 'Mon', trucks: 145, onTime: 94, avgDwell: 285 },
-  { date: 'Tue', trucks: 152, onTime: 92, avgDwell: 310 },
-  { date: 'Wed', trucks: 148, onTime: 95, avgDwell: 275 },
-  { date: 'Thu', trucks: 158, onTime: 93, avgDwell: 320 },
-  { date: 'Fri', trucks: 162, onTime: 96, avgDwell: 265 },
-  { date: 'Sat', trucks: 98, onTime: 94, avgDwell: 290 },
-  { date: 'Sun', trucks: 65, onTime: 97, avgDwell: 240 },
-];
+import { Download, Filter } from 'lucide-react';
+import { useTrucks, useDocks } from '@/hooks/useSupabaseData';
+import { Truck } from '@/lib/types';
 
 export default function YardReports() {
+  const { data: trucks, loading: trucksLoading } = useTrucks(100);
+  const { data: docks, loading: docksLoading } = useDocks(50);
+  const loading = trucksLoading || docksLoading;
+
+  // Build daily data from truck arrival times
+  const dailyData = useMemo(() => {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const byDay: Record<string, { trucks: number; onTime: number; totalDwell: number }> = {};
+    days.forEach(d => { byDay[d] = { trucks: 0, onTime: 0, totalDwell: 0 }; });
+
+    trucks.forEach((t: Truck) => {
+      const day = days[new Date(t.arrivalTime).getDay()];
+      byDay[day].trucks++;
+      if (t.dwellTime <= 240) byDay[day].onTime++;
+      byDay[day].totalDwell += t.dwellTime;
+    });
+
+    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => ({
+      date: day,
+      trucks: byDay[day].trucks,
+      onTime: byDay[day].trucks > 0 ? Math.round((byDay[day].onTime / byDay[day].trucks) * 100) : 0,
+      avgDwell: byDay[day].trucks > 0 ? Math.round(byDay[day].totalDwell / byDay[day].trucks) : 0,
+    }));
+  }, [trucks]);
+
+  // Summary stats
+  const summary = useMemo(() => {
+    const totalTrucks = trucks.length;
+    const onTimeTrucks = trucks.filter((t: Truck) => t.dwellTime <= 240).length;
+    const avgDwell = totalTrucks > 0 ? Math.round(trucks.reduce((s: number, t: Truck) => s + t.dwellTime, 0) / totalTrucks) : 0;
+    const docksOccupied = docks.filter(d => d.currentTruckId).length;
+    const dockUtil = docks.length > 0 ? Math.round((docksOccupied / docks.length) * 100) : 0;
+
+    return {
+      totalTrucks,
+      onTimePercent: totalTrucks > 0 ? Math.round((onTimeTrucks / totalTrucks) * 100 * 10) / 10 : 0,
+      avgDwell,
+      dockUtil,
+    };
+  }, [trucks, docks]);
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading reports data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8">
       <div className="space-y-8">
@@ -39,8 +84,8 @@ export default function YardReports() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
               <div className="flex gap-2">
-                <input type="date" className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" defaultValue="2024-03-13" />
-                <input type="date" className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" defaultValue="2024-03-20" />
+                <input type="date" className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" defaultValue="2026-03-13" />
+                <input type="date" className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" defaultValue="2026-03-20" />
               </div>
             </div>
             <div>
@@ -126,23 +171,23 @@ export default function YardReports() {
           <div className="grid md:grid-cols-4 gap-4">
             <div className="border-l-4 border-blue-600 pl-4">
               <p className="text-sm text-gray-600">Total Trucks Processed</p>
-              <p className="text-3xl font-bold text-gray-900">928</p>
-              <p className="text-xs text-gray-500 mt-1">Last 7 days</p>
+              <p className="text-3xl font-bold text-gray-900">{summary.totalTrucks}</p>
+              <p className="text-xs text-gray-500 mt-1">Current data</p>
             </div>
             <div className="border-l-4 border-emerald-600 pl-4">
               <p className="text-sm text-gray-600">Average On-Time %</p>
-              <p className="text-3xl font-bold text-emerald-600">94.3%</p>
-              <p className="text-xs text-gray-500 mt-1">Last 7 days</p>
+              <p className="text-3xl font-bold text-emerald-600">{summary.onTimePercent}%</p>
+              <p className="text-xs text-gray-500 mt-1">Current data</p>
             </div>
             <div className="border-l-4 border-amber-600 pl-4">
               <p className="text-sm text-gray-600">Average Dwell Time</p>
-              <p className="text-3xl font-bold text-amber-600">289m</p>
-              <p className="text-xs text-gray-500 mt-1">Last 7 days</p>
+              <p className="text-3xl font-bold text-amber-600">{summary.avgDwell}m</p>
+              <p className="text-xs text-gray-500 mt-1">Current data</p>
             </div>
             <div className="border-l-4 border-purple-600 pl-4">
               <p className="text-sm text-gray-600">Dock Utilization</p>
-              <p className="text-3xl font-bold text-purple-600">87%</p>
-              <p className="text-xs text-gray-500 mt-1">Last 7 days</p>
+              <p className="text-3xl font-bold text-purple-600">{summary.dockUtil}%</p>
+              <p className="text-xs text-gray-500 mt-1">Current data</p>
             </div>
           </div>
         </div>

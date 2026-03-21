@@ -1,23 +1,29 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { DataSourceIcon } from '@/components/planning/DataSourceIcon';
 import { MetricCard } from '@/components/planning/MetricCard';
 import { AlertTriangle } from 'lucide-react';
-import {
-  generateDataIngestionJobs, generateCustomers, generateInventorySignals
-} from '@/lib/mock-data';
-import { DataSourceType } from '@/lib/types';
+import { useIngestionJobs, useCustomers, useInventorySignals } from '@/hooks/useSupabaseData';
+import { DataSourceType, DataIngestionJob } from '@/lib/types';
 
 const COLORS = ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899'];
 
 export default function DataIntakePage() {
-  const [jobs, setJobs] = useState(() => generateDataIngestionJobs(20));
+  const { data: rawJobs, loading: jobsLoading } = useIngestionJobs(20);
+  const { data: customers, loading: customersLoading } = useCustomers(8);
+  const { data: signals, loading: signalsLoading } = useInventorySignals(30);
+  const [jobs, setJobs] = useState<typeof rawJobs>([]);
   const [sortColumn, setSortColumn] = useState<string>('receivedAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
-  const [customers] = useState(() => generateCustomers(8));
-  const [signals] = useState(() => generateInventorySignals(30));
+  const loading = jobsLoading || customersLoading || signalsLoading;
+
+  useEffect(() => {
+    if (rawJobs.length > 0) {
+      setJobs(rawJobs);
+    }
+  }, [rawJobs]);
 
   const sortedJobs = useMemo(() => {
     return [...jobs].sort((a, b) => {
@@ -109,6 +115,17 @@ export default function DataIntakePage() {
   const qualityAlerts = useMemo(() => {
     return signals.filter(s => s.validationStatus === 'error' || s.validationStatus === 'warning').slice(0, 5);
   }, [signals]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading intake data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">

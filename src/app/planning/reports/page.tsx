@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { FileText, Download, Calendar } from 'lucide-react';
-import { generateCustomers } from '@/lib/mock-data';
+import { useCustomers } from '@/hooks/useSupabaseData';
 
 const reports = [
   {
@@ -53,7 +53,7 @@ const reports = [
 export default function PlanningReportsPage() {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState('30days');
-  const [customers] = useState(() => generateCustomers(8));
+  const { data: customers, loading } = useCustomers(8);
   const [filterCustomer, setFilterCustomer] = useState('all');
   const [filterRegion, setFilterRegion] = useState('all');
 
@@ -77,6 +77,17 @@ export default function PlanningReportsPage() {
 
     return { mapeData, forecastVsActuals };
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading reports...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">

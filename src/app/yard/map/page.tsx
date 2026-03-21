@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { generateMockTrucks, generateMockDocks } from '@/lib/mock-data';
+import { useTrucks, useDocks } from '@/hooks/useSupabaseData';
 import { Truck, Dock } from '@/lib/types';
 import { TruckDetailPanel } from '@/components/yard/TruckDetailPanel';
 import { RefreshCw, Crosshair } from 'lucide-react';
@@ -27,8 +27,9 @@ const dockStatusColors: Record<string, string> = {
 };
 
 export default function YardMap() {
-  const trucks = generateMockTrucks(25);
-  const docks = generateMockDocks(20);
+  const { data: trucks, loading: trucksLoading } = useTrucks(25);
+  const { data: docks, loading: docksLoading } = useDocks(20);
+  const loading = trucksLoading || docksLoading;
   const [selectedTruck, setSelectedTruck] = useState<Truck | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
 
@@ -39,6 +40,17 @@ export default function YardMap() {
     };
     return (priority[a] || 99) - (priority[b] || 99);
   });
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading yard map...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">

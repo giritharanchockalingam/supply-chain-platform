@@ -1,18 +1,20 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ExceptionCard } from '@/components/planning/ExceptionCard';
 import { MetricCard } from '@/components/planning/MetricCard';
 import { CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
-import { generatePlanningExceptions, generateCustomers, generateForecastRecords, generateReplenishmentRecommendations } from '@/lib/mock-data';
+import { usePlanningExceptions, useCustomers, useForecasts, useReplenishments } from '@/hooks/useSupabaseData';
 
 export default function PlannerWorkbenchPage() {
-  const [exceptions, setExceptions] = useState(() => generatePlanningExceptions(12));
-  const [customers] = useState(() => generateCustomers(8));
-  const [forecasts] = useState(() => generateForecastRecords(60));
-  const [replenishments] = useState(() => generateReplenishmentRecommendations(25));
-  const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0].id);
+  const { data: rawExceptions, loading: exceptionsLoading } = usePlanningExceptions(12);
+  const { data: customers, loading: customersLoading } = useCustomers(8);
+  const { data: forecasts, loading: forecastsLoading } = useForecasts(60);
+  const { data: replenishments, loading: repsLoading } = useReplenishments(25);
+  const [exceptions, setExceptions] = useState<typeof rawExceptions>([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState('');
+  const loading = exceptionsLoading || customersLoading || forecastsLoading || repsLoading;
   const [completedTasks, setCompletedTasks] = useState(0);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [newNote, setNewNote] = useState('');
@@ -23,6 +25,18 @@ export default function PlannerWorkbenchPage() {
     { id: '4', title: 'Resolve duplicate signals - Amazon Fresh', completed: true, dueDate: '2024-03-20', priority: 'medium' },
     { id: '5', title: 'Analyze demand spike - Costco', completed: false, dueDate: '2024-03-26', priority: 'medium' },
   ]);
+
+  useEffect(() => {
+    if (rawExceptions.length > 0) {
+      setExceptions(rawExceptions);
+    }
+  }, [rawExceptions]);
+
+  useEffect(() => {
+    if (customers.length > 0 && !selectedCustomerId) {
+      setSelectedCustomerId(customers[0].id);
+    }
+  }, [customers, selectedCustomerId]);
 
   const selectedCustomer = useMemo(() => customers.find(c => c.id === selectedCustomerId), [selectedCustomerId, customers]);
 
@@ -113,6 +127,17 @@ export default function PlannerWorkbenchPage() {
     { date: '2024-03-27', event: 'Forecast Freeze', type: 'deadline' },
     { date: '2024-03-30', event: 'Month-End Close', type: 'deadline' },
   ];
+
+  if (loading || customers.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading workbench data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">

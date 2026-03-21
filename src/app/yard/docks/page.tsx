@@ -1,14 +1,27 @@
 'use client';
 
 import { useState } from 'react';
-import { generateMockDocks, generateMockTrucks } from '@/lib/mock-data';
+import { useTrucks, useDocks } from '@/hooks/useSupabaseData';
 import { Truck, Dock } from '@/lib/types';
 import { Clock, TrendingUp, Users } from 'lucide-react';
 
 export default function DockSchedulePage() {
-  const docks = generateMockDocks(20).slice(0, 10);
-  const trucks = generateMockTrucks(25);
+  const { data: allDocks, loading: docksLoading } = useDocks(20);
+  const { data: trucks, loading: trucksLoading } = useTrucks(25);
+  const loading = docksLoading || trucksLoading;
+  const docks = allDocks.slice(0, 10);
   const [expandedDock, setExpandedDock] = useState<string | null>(null);
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dock data...</p>
+        </div>
+      </div>
+    );
+  }
 
   const dockStatusColors: Record<string, string> = {
     available: 'bg-emerald-500',

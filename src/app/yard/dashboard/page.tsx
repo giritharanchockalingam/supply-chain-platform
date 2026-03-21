@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { generateMockTrucks, generateMockDocks, generateMockYardMetrics, generateMockExceptions, generateThroughputData, generateDwellTimeDistribution } from '@/lib/mock-data';
+import { useYardDashboard } from '@/hooks/useSupabaseData';
 import { Truck } from '@/lib/types';
 import { MetricCard } from '@/components/yard/MetricCard';
 import { PriorityBadge } from '@/components/yard/PriorityBadge';
@@ -13,16 +13,22 @@ import { TruckDetailPanel } from '@/components/yard/TruckDetailPanel';
 import { TrendingUp, TrendingDown, Truck as TruckIcon, Clock, AlertTriangle, Zap } from 'lucide-react';
 
 export default function YardDashboard() {
-  const trucks = generateMockTrucks(25);
-  const docks = generateMockDocks(20);
-  const metrics = generateMockYardMetrics();
-  const exceptions = generateMockExceptions(12);
-  const throughputData = generateThroughputData();
-  const dwellTimeData = generateDwellTimeDistribution();
+  const { trucks, docks, exceptions, metrics, loading, throughputData, dwellTimeData } = useYardDashboard();
 
   const [selectedTruck, setSelectedTruck] = useState<Truck | null>(null);
   const [sortField, setSortField] = useState<'priority' | 'dwell' | 'arrival'>('priority');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+
+  if (loading || !metrics) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading yard data...</p>
+        </div>
+      </div>
+    );
+  }
 
   const sortedTrucks = useMemo(() => {
     let result = [...trucks];
@@ -43,7 +49,7 @@ export default function YardDashboard() {
     }
 
     return result;
-  }, [sortField, filterStatus]);
+  }, [sortField, filterStatus, trucks]);
 
   const openExceptions = exceptions.filter((e: typeof exceptions[number]) => !e.resolvedAt);
   const statusColors: Record<string, string> = {

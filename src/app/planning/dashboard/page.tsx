@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   ComposedChart, PieChart, Pie, Cell
@@ -8,22 +8,20 @@ import {
 import { BarChart3, TrendingUp, AlertTriangle, Package } from 'lucide-react';
 import { MetricCard } from '@/components/planning/MetricCard';
 import { ExceptionCard } from '@/components/planning/ExceptionCard';
-import {
-  generateDemandPlanningMetrics,
-  generatePlanningExceptions,
-  generateReplenishmentRecommendations,
-  generateForecastRecords,
-  generateCustomers,
-} from '@/lib/mock-data';
+import { usePlanningDashboard } from '@/hooks/useSupabaseData';
 
 const COLORS = ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6'];
 
 export default function DemandDashboard() {
-  const [exceptions, setExceptions] = useState(() => generatePlanningExceptions(8));
-  const [metrics] = useState(() => generateDemandPlanningMetrics());
-  const [replenishments] = useState(() => generateReplenishmentRecommendations(15));
-  const [forecasts] = useState(() => generateForecastRecords(60));
-  const [customers] = useState(() => generateCustomers(8));
+  const { forecasts, replenishments, exceptions: rawExceptions, customers, metrics: rawMetrics, loading } = usePlanningDashboard();
+  const [exceptions, setExceptions] = useState(rawExceptions);
+  const metrics = rawMetrics;
+
+  useEffect(() => {
+    if (rawExceptions.length > 0) {
+      setExceptions(rawExceptions);
+    }
+  }, [rawExceptions]);
 
   const exceptionCounts = useMemo(() => {
     const counts: Record<string, number> = {
@@ -65,6 +63,17 @@ export default function DemandDashboard() {
       };
     });
   }, []);
+
+  if (loading || !metrics) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading planning data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">

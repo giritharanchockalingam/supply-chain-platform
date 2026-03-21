@@ -1,19 +1,26 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { MetricCard } from '@/components/planning/MetricCard';
 import { InventoryGauge } from '@/components/planning/InventoryGauge';
 import { CheckCircle, X } from 'lucide-react';
-import { generateReplenishmentRecommendations } from '@/lib/mock-data';
+import { useReplenishments } from '@/hooks/useSupabaseData';
 
 const COLORS = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6'];
 
 export default function ReplenishmentPage() {
-  const [replenishments, setReplenishments] = useState(() => generateReplenishmentRecommendations(25));
+  const { data: rawReplenishments, loading } = useReplenishments(25);
+  const [replenishments, setReplenishments] = useState<typeof rawReplenishments>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [filterUrgency, setFilterUrgency] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+
+  useEffect(() => {
+    if (rawReplenishments.length > 0) {
+      setReplenishments(rawReplenishments);
+    }
+  }, [rawReplenishments]);
 
   const filteredReplenishments = useMemo(() => {
     return replenishments.filter(r => {
@@ -101,6 +108,17 @@ export default function ReplenishmentPage() {
       .reduce((sum, r) => sum + r.recommendedQuantity, 0);
     return totalQty * avgUnitCost;
   }, [selectedItems, replenishments]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading replenishment data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">

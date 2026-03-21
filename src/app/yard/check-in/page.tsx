@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { generateOCRData, generateMockBOL } from '@/lib/mock-data';
+import { useState, useEffect } from 'react';
+import { useCameraEvents, useBillsOfLading } from '@/hooks/useSupabaseData';
 import { AlertCircle, CheckCircle, AlertTriangle, Camera, RefreshCw } from 'lucide-react';
 
 export default function CheckInPage() {
-  const ocrDataList = generateOCRData(1);
-  const ocrData = ocrDataList[0];
-  const [licensePlate, setLicensePlate] = useState(ocrData.licensePlate);
-  const [trailerNumber, setTrailerNumber] = useState(ocrData.trailerNumber);
+  const { data: cameraEvents, loading: eventsLoading } = useCameraEvents(1);
+  const { data: bols, loading: bolsLoading } = useBillsOfLading(10);
+  const loading = eventsLoading || bolsLoading;
+
+  const ocrData = cameraEvents[0] || null;
+  const [licensePlate, setLicensePlate] = useState('');
+  const [trailerNumber, setTrailerNumber] = useState('');
   const [bolNumber, setBolNumber] = useState('BOL20240320001');
   const [carrierName, setCarrierName] = useState('FedEx Freight');
   const [driverName, setDriverName] = useState('John Smith');
@@ -16,8 +19,15 @@ export default function CheckInPage() {
   const [sealNumber, setSealNumber] = useState('SL-45832');
 
   const [bolLookedUp, setBolLookedUp] = useState(false);
-  const bols = generateMockBOL([{ id: 'truck-1', licensePlate, trailerNumber } as any]);
-  const bol = bolLookedUp ? bols[0] : null;
+
+  useEffect(() => {
+    if (ocrData) {
+      setLicensePlate(ocrData.licensePlate);
+      setTrailerNumber(ocrData.trailerNumber);
+    }
+  }, [ocrData]);
+
+  const bol = bolLookedUp && bols.length > 0 ? bols[0] : null;
 
   const validations = {
     bolMatch: { valid: true, label: 'BOL Match' },
@@ -29,6 +39,17 @@ export default function CheckInPage() {
   };
 
   const priorityScore = 78;
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading check-in data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
@@ -58,13 +79,13 @@ export default function CheckInPage() {
                   <div className="grid md:grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-gray-600">License Plate Detected:</p>
-                      <p className="font-bold text-lg text-blue-600">{ocrData.licensePlate}</p>
-                      <p className="text-xs text-gray-500">Confidence: {Math.round(ocrData.confidence * 100)}%</p>
+                      <p className="font-bold text-lg text-blue-600">{ocrData?.licensePlate || licensePlate}</p>
+                      <p className="text-xs text-gray-500">Confidence: {ocrData?.ocrConfidence ? Math.round(ocrData.ocrConfidence * 100) : 0}%</p>
                     </div>
                     <div>
                       <p className="text-gray-600">Trailer Number Detected:</p>
-                      <p className="font-bold text-lg text-blue-600">{ocrData.trailerNumber}</p>
-                      <p className="text-xs text-gray-500">Confidence: {Math.round(ocrData.confidence * 100)}%</p>
+                      <p className="font-bold text-lg text-blue-600">{ocrData?.trailerNumber || trailerNumber}</p>
+                      <p className="text-xs text-gray-500">Confidence: {ocrData?.ocrConfidence ? Math.round(ocrData.ocrConfidence * 100) : 0}%</p>
                     </div>
                   </div>
                 </div>

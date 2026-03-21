@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, ReactNode } from 'react';
-import { generateMockExceptions, generateMockTrucks } from '@/lib/mock-data';
+import { useTrucks, useYardExceptions } from '@/hooks/useSupabaseData';
 import { YardException, Truck } from '@/lib/types';
 import { AlertCircle, XCircle, AlertTriangle, Filter, ChevronDown } from 'lucide-react';
 
@@ -17,8 +17,9 @@ const typeLabels: Record<string, string> = {
 };
 
 export default function ExceptionsPage() {
-  const allExceptions = generateMockExceptions(20);
-  const trucks = generateMockTrucks(25);
+  const { data: allExceptions, loading: exceptionsLoading } = useYardExceptions(50);
+  const { data: trucks, loading: trucksLoading } = useTrucks(25);
+  const loading = exceptionsLoading || trucksLoading;
 
   const [filterSeverity, setFilterSeverity] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
@@ -26,6 +27,17 @@ export default function ExceptionsPage() {
   const [sortBy, setSortBy] = useState<'created' | 'severity'>('created');
   const [selectedException, setSelectedException] = useState<string | null>(null);
   const [expandedDetails, setExpandedDetails] = useState<string | null>(null);
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading exceptions...</p>
+        </div>
+      </div>
+    );
+  }
 
   const filteredExceptions = useMemo(() => {
     let result = [...allExceptions];
@@ -52,7 +64,7 @@ export default function ExceptionsPage() {
     }
 
     return result;
-  }, [filterSeverity, filterType, filterStatus, sortBy]);
+  }, [filterSeverity, filterType, filterStatus, sortBy, allExceptions]);
 
   const severityColors: Record<string, string> = {
     critical: 'bg-red-50 border-red-200',

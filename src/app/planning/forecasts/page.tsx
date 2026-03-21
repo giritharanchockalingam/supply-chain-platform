@@ -1,18 +1,32 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { MetricCard } from '@/components/planning/MetricCard';
 import { ForecastChart } from '@/components/planning/ForecastChart';
 import { Save } from 'lucide-react';
-import { generateForecastRecords, generateSKUs } from '@/lib/mock-data';
+import { useForecasts, useProducts } from '@/hooks/useSupabaseData';
 
 export default function ForecastManagementPage() {
-  const [skus] = useState(() => generateSKUs(15));
-  const [forecasts, setForecasts] = useState(() => generateForecastRecords(60));
-  const [selectedSkuId, setSelectedSkuId] = useState(skus[0].id);
+  const { data: skus, loading: skusLoading } = useProducts(15);
+  const { data: rawForecasts, loading: forecastsLoading } = useForecasts(200);
+  const [forecasts, setForecasts] = useState<typeof rawForecasts>([]);
+  const loading = skusLoading || forecastsLoading;
+  const [selectedSkuId, setSelectedSkuId] = useState('');
   const [adjustmentReason, setAdjustmentReason] = useState('market_intelligence');
   const [adjustmentValue, setAdjustmentValue] = useState('');
+
+  useEffect(() => {
+    if (rawForecasts.length > 0) {
+      setForecasts(rawForecasts);
+    }
+  }, [rawForecasts]);
+
+  useEffect(() => {
+    if (skus.length > 0 && !selectedSkuId) {
+      setSelectedSkuId(skus[0].id);
+    }
+  }, [skus, selectedSkuId]);
 
   const selectedSku = useMemo(() => skus.find(s => s.id === selectedSkuId), [selectedSkuId, skus]);
 
@@ -88,6 +102,17 @@ export default function ForecastManagementPage() {
       .sort((a, b) => b.period.localeCompare(a.period))
       .slice(0, 12);
   }, [selectedForecasts]);
+
+  if (loading || skus.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading forecast data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
