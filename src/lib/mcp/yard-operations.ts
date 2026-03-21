@@ -1,7 +1,7 @@
 /**
  * MCP Server: Yard Operations
  *
- * 22 tools for truck management, dock operations, gate check-in,
+ * 17 tools for truck management, dock operations, gate check-in,
  * exception handling, and yard analytics
  */
 
@@ -13,6 +13,14 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key',
   { db: { schema: 'supply_chain' } }
 );
+
+/** Compute dwell time in minutes from gate_in_at */
+function computeDwell(gateIn: string | null, gateOut: string | null): number {
+  if (!gateIn) return 0;
+  const start = new Date(gateIn).getTime();
+  const end = gateOut ? new Date(gateOut).getTime() : Date.now();
+  return Math.max(0, Math.round((end - start) / 60000));
+}
 
 export class YardOperationsServer extends BaseMCPServer {
   name = 'mcp-yard-operations';
@@ -40,12 +48,18 @@ export class YardOperationsServer extends BaseMCPServer {
       const q = String(args.query);
       const { data, error } = await supabase
         .from('trucks')
-        .select('*')
+        .select('*, carriers(name)')
         .or(`license_plate.ilike.%${q}%,id.eq.${q.length === 36 ? q : '00000000-0000-0000-0000-000000000000'}`)
         .limit(5);
       if (error) return createErrorResult(error.message);
       if (!data?.length) return createTextResult(`No trucks found matching "${q}"`);
-      return createJsonResult(data);
+      // Add computed dwell time
+      const enriched = data.map(t => ({
+        ...t,
+        carrier_name: t.carriers?.name || 'Unknown',
+        dwell_time_minutes: computeDwell(t.gate_in_at, t.gate_out_at),
+      }));
+      return createJsonResult(enriched);
     });
 
     this.registerTool({
@@ -59,11 +73,16 @@ export class YardOperationsServer extends BaseMCPServer {
         },
       },
     }, async (args) => {
-      let query = supabase.from('trucks').select('*').order('created_at', { ascending: false }).limit(Number(args.limit) || 25);
+      let query = supabase.from('trucks').select('*, carriers(name)').order('priority_score', { ascending: false }).limit(Number(args.limit) || 25);
       if (args.status) query = query.eq('status', args.status);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
-      return createJsonResult({ trucks: data, total: data?.length || 0 });
+      const enriched = (data || []).map(t => ({
+        ...t,
+        carrier_name: t.carriers?.name || 'Unknown',
+        dwell_time_minutes: computeDwell(t.gate_in_at, t.gate_out_at),
+      }));
+      return createJsonResult({ trucks: enriched, total: enriched.length });
     });
 
     this.registerTool({
@@ -77,13 +96,25 @@ export class YardOperationsServer extends BaseMCPServer {
         required: ['carrier_name'],
       },
     }, async (args) => {
+      // First find carrier IDs matching the name
+      const { data: carriers } = await supabase
+        .from('carriers')
+        .select('id, name')
+        .ilike('name', `%${args.carrier_name}%`);
+      if (!carriers?.length) return createTextResult(`No carriers found matching "${args.carrier_name}"`);
+      const carrierIds = carriers.map(c => c.id);
       const { data, error } = await supabase
         .from('trucks')
-        .select('*')
-        .ilike('carrier_name', `%${args.carrier_name}%`)
+        .select('*, carriers(name)')
+        .in('carrier_id', carrierIds)
         .limit(20);
       if (error) return createErrorResult(error.message);
-      return createJsonResult({ trucks: data, total: data?.length || 0 });
+      const enriched = (data || []).map(t => ({
+        ...t,
+        carrier_name: t.carriers?.name || 'Unknown',
+        dwell_time_minutes: computeDwell(t.gate_in_at, t.gate_out_at),
+      }));
+      return createJsonResult({ trucks: enriched, total: enriched.length });
     });
 
     this.registerTool({
@@ -97,14 +128,21 @@ export class YardOperationsServer extends BaseMCPServer {
       },
     }, async (args) => {
       const threshold = Number(args.threshold_minutes) || 120;
+      const cutoff = new Date(Date.now() - threshold * 60000).toISOString();
       const { data, error } = await supabase
         .from('trucks')
-        .select('*')
-        .gt('dwell_time', threshold)
+        .select('*, carriers(name)')
         .not('status', 'eq', 'departed')
-        .order('dwell_time', { ascending: false });
+        .not('gate_in_at', 'is', null)
+        .lt('gate_in_at', cutoff)
+        .order('gate_in_at', { ascending: true });
       if (error) return createErrorResult(error.message);
-      return createJsonResult({ high_dwell_trucks: data, threshold_minutes: threshold, count: data?.length || 0 });
+      const enriched = (data || []).map(t => ({
+        ...t,
+        carrier_name: t.carriers?.name || 'Unknown',
+        dwell_time_minutes: computeDwell(t.gate_in_at, t.gate_out_at),
+      }));
+      return createJsonResult({ high_dwell_trucks: enriched, threshold_minutes: threshold, count: enriched.length });
     });
 
     this.registerTool({
@@ -132,7 +170,7 @@ export class YardOperationsServer extends BaseMCPServer {
     // ---- DOCK TOOLS ----
     this.registerTool({
       name: 'list_docks',
-      description: 'List all docks with their current status and utilization',
+      description: 'List all docks with their current status',
       inputSchema: {
         type: 'object',
         properties: {
@@ -140,7 +178,7 @@ export class YardOperationsServer extends BaseMCPServer {
         },
       },
     }, async (args) => {
-      let query = supabase.from('docks').select('*').order('name');
+      let query = supabase.from('docks').select('*').order('dock_number');
       if (args.status) query = query.eq('status', args.status);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
@@ -160,9 +198,9 @@ export class YardOperationsServer extends BaseMCPServer {
       },
     }, async (args) => {
       let query = supabase.from('docks').select('*').eq('status', 'available');
-      if (args.type) query = query.eq('type', args.type);
-      if (args.temperature_capable) query = query.eq('temperature_capable', true);
-      if (args.hazmat_capable) query = query.eq('hazmat_capable', true);
+      if (args.type) query = query.eq('dock_type', args.type);
+      if (args.temperature_capable) query = query.eq('has_refrigeration', true);
+      if (args.hazmat_capable) query = query.eq('has_hazmat_cert', true);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
       return createJsonResult({ available_docks: data, count: data?.length || 0 });
@@ -197,7 +235,7 @@ export class YardOperationsServer extends BaseMCPServer {
       inputSchema: {
         type: 'object',
         properties: {
-          severity: { type: 'string', description: 'Filter by severity', enum: ['critical', 'high', 'medium', 'low'] },
+          severity: { type: 'string', description: 'Filter by severity', enum: ['critical', 'warning', 'info'] },
           type: { type: 'string', description: 'Filter by exception type' },
           limit: { type: 'number', description: 'Max results', default: 20 },
         },
@@ -205,7 +243,7 @@ export class YardOperationsServer extends BaseMCPServer {
     }, async (args) => {
       let query = supabase.from('yard_exceptions').select('*').order('created_at', { ascending: false }).limit(Number(args.limit) || 20);
       if (args.severity) query = query.eq('severity', args.severity);
-      if (args.type) query = query.eq('type', args.type);
+      if (args.type) query = query.eq('exception_type', args.type);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
       return createJsonResult({ exceptions: data, count: data?.length || 0 });
@@ -225,7 +263,7 @@ export class YardOperationsServer extends BaseMCPServer {
     }, async (args) => {
       const { data, error } = await supabase
         .from('yard_exceptions')
-        .update({ status: 'resolved', resolution: args.resolution, resolved_at: new Date().toISOString() })
+        .update({ status: 'resolved', resolution_notes: args.resolution, resolved_at: new Date().toISOString() })
         .eq('id', args.exception_id)
         .select();
       if (error) return createErrorResult(error.message);
@@ -239,13 +277,13 @@ export class YardOperationsServer extends BaseMCPServer {
       inputSchema: {
         type: 'object',
         properties: {
-          gate_id: { type: 'string', description: 'Specific gate ID' },
+          camera_id: { type: 'string', description: 'Specific camera ID' },
           limit: { type: 'number', description: 'Max results', default: 10 },
         },
       },
     }, async (args) => {
-      let query = supabase.from('camera_events').select('*').order('created_at', { ascending: false }).limit(Number(args.limit) || 10);
-      if (args.gate_id) query = query.eq('gate_id', args.gate_id);
+      let query = supabase.from('camera_events').select('*').order('captured_at', { ascending: false }).limit(Number(args.limit) || 10);
+      if (args.camera_id) query = query.eq('camera_id', args.camera_id);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
       return createJsonResult({ events: data, count: data?.length || 0 });
@@ -280,9 +318,9 @@ export class YardOperationsServer extends BaseMCPServer {
       inputSchema: { type: 'object', properties: {} },
     }, async () => {
       const [trucksRes, docksRes, exceptionsRes] = await Promise.all([
-        supabase.from('trucks').select('status, dwell_time').not('status', 'eq', 'departed'),
-        supabase.from('docks').select('status, utilization_today'),
-        supabase.from('yard_exceptions').select('severity').eq('status', 'active'),
+        supabase.from('trucks').select('status, gate_in_at, gate_out_at').not('status', 'eq', 'departed'),
+        supabase.from('docks').select('status'),
+        supabase.from('yard_exceptions').select('severity').is('resolved_at', null),
       ]);
 
       const trucks = trucksRes.data || [];
@@ -290,10 +328,12 @@ export class YardOperationsServer extends BaseMCPServer {
       const exceptions = exceptionsRes.data || [];
 
       const totalTrucks = trucks.length;
-      const avgDwell = trucks.length > 0 ? Math.round(trucks.reduce((s, t) => s + (t.dwell_time || 0), 0) / trucks.length) : 0;
+      const dwellTimes = trucks.map(t => computeDwell(t.gate_in_at, null));
+      const avgDwell = dwellTimes.length > 0 ? Math.round(dwellTimes.reduce((s, d) => s + d, 0) / dwellTimes.length) : 0;
       const atDock = trucks.filter(t => ['at_dock', 'unloading', 'loading'].includes(t.status)).length;
       const availableDocks = docks.filter(d => d.status === 'available').length;
-      const avgUtilization = docks.length > 0 ? Math.round(docks.reduce((s, d) => s + (d.utilization_today || 0), 0) / docks.length) : 0;
+      const occupiedDocks = docks.filter(d => d.status === 'occupied' || d.status === 'assigned').length;
+      const avgUtilization = docks.length > 0 ? Math.round((occupiedDocks / docks.length) * 100) : 0;
       const criticalExceptions = exceptions.filter(e => e.severity === 'critical').length;
 
       return createJsonResult({
@@ -323,7 +363,7 @@ export class YardOperationsServer extends BaseMCPServer {
       description: 'Get detailed dock utilization metrics for all docks',
       inputSchema: { type: 'object', properties: {} },
     }, async () => {
-      const { data, error } = await supabase.from('docks').select('*').order('name');
+      const { data, error } = await supabase.from('docks').select('*').order('dock_number');
       if (error) return createErrorResult(error.message);
       const docks = data || [];
       const available = docks.filter(d => d.status === 'available').length;
@@ -332,8 +372,8 @@ export class YardOperationsServer extends BaseMCPServer {
       return createJsonResult({
         total_docks: docks.length,
         available, occupied, maintenance,
-        avg_utilization: Math.round(docks.reduce((s, d) => s + (d.utilization_today || 0), 0) / Math.max(docks.length, 1)),
-        docks: docks.map(d => ({ name: d.name, status: d.status, utilization: d.utilization_today, type: d.type })),
+        avg_utilization: docks.length > 0 ? Math.round((occupied / docks.length) * 100) : 0,
+        docks: docks.map(d => ({ name: d.dock_number, status: d.status, type: d.dock_type, has_refrigeration: d.has_refrigeration, has_hazmat_cert: d.has_hazmat_cert })),
       });
     });
 

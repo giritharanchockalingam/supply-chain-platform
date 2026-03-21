@@ -1,6 +1,6 @@
 /**
- * Supabase Database Types - Auto-generated from supply_chain schema
- * These types represent the structure of tables in the supply_chain schema
+ * Supabase Database Types - Matches actual supply_chain schema columns
+ * Generated from: SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = 'supply_chain'
  */
 
 // ========== YARD MANAGEMENT TABLES ==========
@@ -9,35 +9,28 @@ export interface DistributionCenter {
   id: string
   code: string
   name: string
-  address: string
-  city: string
-  state: string
-  zip_code: string
-  country: string
-  latitude: number
-  longitude: number
-  total_docks: number
-  active_docks: number
-  operating_hours: string
+  address: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  timezone: string | null
+  total_docks: number | null
+  is_active: boolean | null
   created_at: string
   updated_at: string
 }
 
 export interface Dock {
   id: string
-  dc_id: string
-  name: string
-  status: 'available' | 'assigned' | 'occupied' | 'maintenance' | 'blocked'
-  type: 'inbound' | 'outbound' | 'dual'
-  temperature_capable: boolean
-  hazmat_capable: boolean
-  max_trailer_length: number
+  dc_id: string | null
+  dock_number: string
+  dock_type: string
+  status: string | null
+  has_refrigeration: boolean | null
+  has_hazmat_cert: boolean | null
+  max_trailer_length_ft: number | null
   current_truck_id: string | null
-  scheduled_truck_id: string | null
-  last_activity: string
-  utilization_today: number
-  position_x: number
-  position_y: number
+  last_activity_at: string | null
   created_at: string
   updated_at: string
 }
@@ -46,117 +39,136 @@ export interface Carrier {
   id: string
   code: string
   name: string
-  contact_name: string
-  phone: string
-  email: string
-  account_manager: string
-  contracted_lanes: number
-  on_time_percentage: number
-  rating: number
-  active: boolean
+  scac_code: string | null
+  dot_number: string | null
+  mc_number: string | null
+  contact_name: string | null
+  contact_phone: string | null
+  contact_email: string | null
+  is_preferred: boolean | null
+  rating: number | null
   created_at: string
-  updated_at: string
 }
 
 export interface Truck {
   id: string
-  dc_id: string
-  license_plate: string
-  trailer_number: string
-  carrier_id: string
-  carrier_name: string
-  driver_name: string
-  driver_phone: string
-  status: 'approaching' | 'at_gate' | 'checked_in' | 'in_yard' | 'at_dock' | 'unloading' | 'loading' | 'completed' | 'departed'
-  arrival_time: string
-  gate_id: string
+  dc_id: string | null
+  carrier_id: string | null
+  license_plate: string | null
+  trailer_number: string | null
+  container_id: string | null
+  driver_name: string | null
+  driver_phone: string | null
+  driver_license: string | null
+  truck_type: string | null
+  status: string | null
+  priority_score: number | null
+  is_temperature_controlled: boolean | null
+  is_hazmat: boolean | null
+  is_oversize: boolean | null
+  seal_number: string | null
   assigned_dock_id: string | null
-  priority_score: number
-  priority_level: 'critical' | 'high' | 'medium' | 'low'
-  bol_id: string
-  temperature_class: 'ambient' | 'refrigerated' | 'frozen' | 'hazmat'
-  estimated_unload_time: number
-  dwell_time: number
-  location_x: number
-  location_y: number
-  zone: string
+  yard_location: string | null
+  gate_in_at: string | null
+  dock_assigned_at: string | null
+  dock_arrived_at: string | null
+  unload_started_at: string | null
+  unload_completed_at: string | null
+  gate_out_at: string | null
+  expected_arrival_at: string | null
+  appointment_at: string | null
   created_at: string
   updated_at: string
+  location_x: number | null
+  location_y: number | null
+  zone: string | null
+  // Joined from carriers table (optional)
+  carriers?: { name: string } | null
 }
 
 export interface BillOfLading {
   id: string
-  truck_id: string
+  truck_id: string | null
   bol_number: string
-  customer_name: string
-  customer_priority: 'platinum' | 'gold' | 'silver' | 'standard'
-  product_type: string
-  product_category: string
-  quantity: number
-  weight: number
-  temperature_class: 'ambient' | 'refrigerated' | 'frozen' | 'hazmat'
-  delivery_deadline: string
-  unloading_constraints: string
-  special_instructions: string
-  hazmat: boolean
+  po_number: string | null
+  ship_from: string | null
+  ship_to: string | null
+  customer_name: string | null
+  customer_priority: string | null
+  product_type: string | null
+  commodity_code: string | null
+  total_weight_lbs: number | null
+  total_pallets: number | null
+  total_cases: number | null
+  is_temperature_sensitive: boolean | null
+  required_temp_min_f: number | null
+  required_temp_max_f: number | null
+  is_hazmat: boolean | null
   hazmat_class: string | null
+  un_number: string | null
+  delivery_deadline: string | null
+  special_instructions: string | null
+  status: string | null
+  verified_at: string | null
+  verified_by: string | null
   created_at: string
-  updated_at: string
 }
 
 export interface CameraEvent {
   id: string
-  dc_id: string
+  dc_id: string | null
   camera_id: string
-  event_type: 'arrival' | 'departure'
-  timestamp: string
-  license_plate: string
-  trailer_number: string
-  ocr_confidence: number
-  image_url: string
-  truck_id: string | null
-  processed: boolean
+  camera_location: string | null
+  event_type: string | null
+  license_plate_detected: string | null
+  trailer_number_detected: string | null
+  container_id_detected: string | null
+  confidence_score: number | null
+  matched_truck_id: string | null
+  image_url: string | null
+  raw_ocr_data: unknown | null
+  captured_at: string | null
+  processed_at: string | null
   created_at: string
-  updated_at: string
 }
 
 export interface YardException {
   id: string
-  dc_id: string
-  type: 'missing_bol' | 'mismatched_trailer' | 'late_arrival' | 'temperature_breach' | 'dock_congestion' | 'hazmat_violation' | 'overdue_dwell' | 'damaged_load'
-  severity: 'critical' | 'warning' | 'info'
-  truck_id: string
-  description: string
-  created_at: string
-  resolved_at: string | null
+  dc_id: string | null
+  truck_id: string | null
+  bol_id: string | null
+  exception_type: string
+  severity: string | null
+  title: string
+  description: string | null
+  status: string | null
   assigned_to: string | null
-  resolution: string | null
-  updated_at: string
-}
-
-export interface YardActivityLog {
-  id: string
-  dc_id: string
-  truck_id: string
-  event_type: string
-  details: Record<string, unknown>
-  created_by: string
+  resolved_at: string | null
+  resolved_by: string | null
+  resolution_notes: string | null
   created_at: string
+  updated_at: string
 }
 
 // ========== DEMAND PLANNING TABLES ==========
 
 export interface Customer {
   id: string
+  code: string
   name: string
-  segment: 'enterprise' | 'mid_market' | 'boutique'
-  region: string
-  data_quality_score: number
-  primary_data_source: 'edi' | 'email' | 'spreadsheet' | 'pdf' | 'manual' | 'api'
-  account_manager: string
-  total_locations: number
-  active_locations: number
-  last_data_received: string
+  segment: string | null
+  region: string | null
+  state: string | null
+  city: string | null
+  data_quality_score: number | null
+  preferred_channels: string[] | null
+  edi_capable: boolean | null
+  edi_partner_id: string | null
+  primary_contact: string | null
+  contact_email: string | null
+  contact_phone: string | null
+  payment_terms: string | null
+  is_active: boolean | null
   created_at: string
   updated_at: string
 }
@@ -165,73 +177,80 @@ export interface Product {
   id: string
   sku: string
   name: string
-  category: string
-  subcategory: string
-  unit_of_measure: string
-  unit_cost: number
-  lead_time_days: number
-  shelf_life_days: number
-  min_order_quantity: number
-  safety_stock_days: number
+  category: string | null
+  subcategory: string | null
+  brand: string | null
+  uom: string | null
+  case_pack: number | null
+  weight_lbs: number | null
+  is_temperature_sensitive: boolean | null
+  is_hazmat: boolean | null
+  shelf_life_days: number | null
+  lead_time_days: number | null
+  min_order_qty: number | null
+  standard_cost: number | null
+  list_price: number | null
+  lifecycle_stage: string | null
+  forecast_method: string | null
   created_at: string
   updated_at: string
 }
 
 export interface InventorySignal {
   id: string
-  customer_id: string
-  customer_name: string
-  product_id: string
-  location_id: string
-  location_name: string
-  source: 'edi' | 'email' | 'spreadsheet' | 'pdf' | 'manual' | 'api'
-  reported_date: string
-  received_date: string
-  on_hand_quantity: number
-  sell_through_quantity: number
-  on_order_quantity: number
-  data_quality_score: number
-  validation_status: 'valid' | 'warning' | 'error' | 'pending'
-  validation_issues: string
-  raw_payload: string
+  customer_id: string | null
+  product_id: string | null
+  location_code: string | null
+  location_name: string | null
+  source_type: string | null
+  source_file: string | null
+  report_date: string
+  on_hand_qty: number | null
+  on_order_qty: number | null
+  sold_qty: number | null
+  lost_sales_qty: number | null
+  days_of_supply: number | null
+  data_quality_score: number | null
+  is_validated: boolean | null
+  validation_errors: unknown | null
+  raw_data: unknown | null
+  ingested_at: string | null
+  validated_at: string | null
   created_at: string
-  updated_at: string
 }
 
 export interface IngestionJob {
   id: string
-  source: 'edi' | 'email' | 'spreadsheet' | 'pdf' | 'manual' | 'api'
-  customer_id: string
-  customer_name: string
-  file_name: string
-  received_at: string
-  processed_at: string | null
-  status: 'queued' | 'processing' | 'completed' | 'failed' | 'needs_review'
-  records_total: number
-  records_valid: number
-  records_invalid: number
-  error_message: string | null
+  source_type: string
+  customer_id: string | null
+  file_name: string | null
+  file_size_bytes: number | null
+  status: string | null
+  total_records: number | null
+  valid_records: number | null
+  error_records: number | null
+  error_details: unknown | null
+  processing_started_at: string | null
+  processing_completed_at: string | null
   created_at: string
-  updated_at: string
 }
 
 export interface Forecast {
   id: string
-  product_id: string
-  product_name: string
-  customer_id: string
-  customer_name: string
-  location_id: string
-  period: string
-  forecast_quantity: number
-  actual_quantity: number | null
-  method: 'holt_winters' | 'arima' | 'xgboost' | 'ensemble' | 'crostons'
-  confidence_low: number
-  confidence_high: number
-  status: 'draft' | 'reviewed' | 'approved' | 'published'
+  product_id: string | null
+  customer_id: string | null
+  location_code: string | null
+  forecast_date: string
+  period_type: string | null
+  forecast_qty: number
+  confidence_low: number | null
+  confidence_high: number | null
+  actual_qty: number | null
+  forecast_method: string | null
   mape: number | null
   bias: number | null
-  last_updated: string
+  status: string | null
+  adjusted_qty: number | null
   adjusted_by: string | null
   adjustment_reason: string | null
   created_at: string
@@ -240,69 +259,83 @@ export interface Forecast {
 
 export interface Replenishment {
   id: string
-  product_id: string
-  product_name: string
-  customer_id: string
-  customer_name: string
-  location_id: string
-  location_name: string
-  current_inventory: number
-  reorder_point: number
-  safety_stock: number
-  recommended_quantity: number
-  urgency: 'critical' | 'high' | 'medium' | 'low'
+  product_id: string | null
+  customer_id: string | null
+  location_code: string | null
+  urgency: string | null
+  current_inventory: number | null
+  reorder_point: number | null
+  safety_stock: number | null
+  recommended_qty: number
   expected_stockout_date: string | null
-  lead_time_days: number
-  order_by_date: string
-  status: 'pending' | 'approved' | 'ordered' | 'shipped' | 'delivered'
-  approved_at: string | null
+  order_by_date: string | null
+  estimated_value: number | null
+  status: string | null
   approved_by: string | null
+  approved_at: string | null
+  po_number: string | null
   created_at: string
   updated_at: string
 }
 
 export interface PlanningException {
   id: string
-  type: 'missing_data' | 'duplicate_signal' | 'demand_spike' | 'demand_drop' | 'stale_data' | 'quality_issue' | 'stockout_risk' | 'overstock_risk'
-  severity: 'critical' | 'warning' | 'info'
-  product_id: string
-  customer_id: string
-  description: string
-  detected_at: string
+  customer_id: string | null
+  product_id: string | null
+  exception_type: string
+  severity: string | null
+  title: string
+  description: string | null
+  affected_skus: string[] | null
+  status: string | null
+  assigned_to: string | null
   resolved_at: string | null
-  auto_resolution: string | null
+  resolution_notes: string | null
   created_at: string
   updated_at: string
 }
 
-// ========== ENTERPRISE INTEGRATION TABLES ==========
+// ========== ADDITIONAL TABLES ==========
+
+export interface YardActivityLog {
+  id: string
+  dc_id: string | null
+  truck_id: string | null
+  event_type: string
+  event_data: unknown | null
+  performed_by: string | null
+  created_at: string
+}
 
 export interface EdiTransaction {
   id: string
-  customer_id: string
   transaction_type: string
-  document_number: string
-  transaction_date: string
-  status: 'received' | 'processing' | 'validated' | 'failed'
-  raw_data: string
-  parsed_data: Record<string, unknown>
-  validation_errors: string | null
+  direction: string | null
+  trading_partner_id: string | null
+  customer_id: string | null
+  isa_control_number: string | null
+  gs_control_number: string | null
+  raw_content: string | null
+  parsed_data: unknown | null
+  status: string | null
+  error_message: string | null
+  received_at: string | null
+  processed_at: string | null
   created_at: string
-  updated_at: string
 }
 
 export interface WmsEvent {
   id: string
-  dc_id: string
+  dc_id: string | null
+  event_type: string
+  reference_number: string | null
   truck_id: string | null
-  dock_id: string | null
-  event_type: 'receipt' | 'putaway' | 'pick' | 'ship'
   bol_id: string | null
   product_id: string | null
-  quantity: number
-  location_code: string
-  user_id: string
-  details: Record<string, unknown>
+  quantity: number | null
+  location_code: string | null
+  status: string | null
+  event_data: unknown | null
+  wms_timestamp: string | null
   created_at: string
-  updated_at: string
 }

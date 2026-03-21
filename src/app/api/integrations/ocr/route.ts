@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     const trucks = await getTrucks({ dcId })
     const matchingTruck = trucks.find(
       (t) =>
-        t.license_plate.toUpperCase() === licensePlate.toUpperCase() ||
+        (t.license_plate || '').toUpperCase() === licensePlate.toUpperCase() ||
         t.trailer_number === trailerNumber
     )
 

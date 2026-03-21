@@ -229,14 +229,26 @@ export async function getYardMetrics(dcCode: string) {
       totalTrucksInYard: trucks.length,
       trucksWaiting,
       trucksUnloading,
-      averageDwellTime: trucks.length > 0 ? trucks.reduce((sum, t) => sum + t.dwell_time, 0) / trucks.length : 0,
+      averageDwellTime: trucks.length > 0 ? trucks.reduce((sum, t) => {
+        const gateIn = t.gate_in_at ? new Date(t.gate_in_at).getTime() : Date.now()
+        const gateOut = t.gate_out_at ? new Date(t.gate_out_at).getTime() : Date.now()
+        return sum + Math.max(0, (gateOut - gateIn) / 60000)
+      }, 0) / trucks.length : 0,
       docksOccupied: docsOccupied,
       docksAvailable: docks.length - docsOccupied,
       exceptionsOpen: exceptions.length,
       exceptionsCritical: exceptions.filter((e) => e.severity === 'critical').length,
       throughputToday: trucks.filter((t) => t.status === 'departed').length,
-      avgTurnaroundTime: trucks.length > 0 ? trucks.reduce((sum, t) => sum + t.dwell_time, 0) / trucks.length : 0,
-      detentionAtRisk: trucks.filter((t) => t.dwell_time > 180).length,
+      avgTurnaroundTime: trucks.length > 0 ? trucks.reduce((sum, t) => {
+        const gateIn = t.gate_in_at ? new Date(t.gate_in_at).getTime() : Date.now()
+        const gateOut = t.gate_out_at ? new Date(t.gate_out_at).getTime() : Date.now()
+        return sum + Math.max(0, (gateOut - gateIn) / 60000)
+      }, 0) / trucks.length : 0,
+      detentionAtRisk: trucks.filter((t) => {
+        if (!t.gate_in_at) return false
+        const dwell = (Date.now() - new Date(t.gate_in_at).getTime()) / 60000
+        return dwell > 180
+      }).length,
       onTimeUnload: 0,
     }
   } catch (error) {
@@ -738,29 +750,31 @@ export async function getCustomerDataQuality() {
       }
     }
 
-    const average = customers.reduce((sum, c) => sum + c.data_quality_score, 0) / customers.length
+    const average = customers.reduce((sum, c) => sum + (c.data_quality_score || 0), 0) / customers.length
 
     const bySegment: Record<string, number> = {}
     const byRegion: Record<string, number> = {}
 
     customers.forEach((c) => {
-      if (!bySegment[c.segment]) {
-        bySegment[c.segment] = 0
+      const seg = c.segment || 'unknown'
+      const reg = c.region || 'unknown'
+      if (!bySegment[seg]) {
+        bySegment[seg] = 0
       }
-      bySegment[c.segment] += c.data_quality_score
+      bySegment[seg] += (c.data_quality_score || 0)
 
-      if (!byRegion[c.region]) {
-        byRegion[c.region] = 0
+      if (!byRegion[reg]) {
+        byRegion[reg] = 0
       }
-      byRegion[c.region] += c.data_quality_score
+      byRegion[reg] += (c.data_quality_score || 0)
     })
 
     Object.keys(bySegment).forEach((key) => {
-      bySegment[key] = bySegment[key] / customers.filter((c) => c.segment === key).length
+      bySegment[key] = bySegment[key] / customers.filter((c) => (c.segment || 'unknown') === key).length
     })
 
     Object.keys(byRegion).forEach((key) => {
-      byRegion[key] = byRegion[key] / customers.filter((c) => c.region === key).length
+      byRegion[key] = byRegion[key] / customers.filter((c) => (c.region || 'unknown') === key).length
     })
 
     return {
@@ -834,9 +848,9 @@ export async function getIngestionSummary() {
       failed: jobs.filter((j) => j.status === 'failed').length,
       needsReview: jobs.filter((j) => j.status === 'needs_review').length,
       processing: jobs.filter((j) => j.status === 'processing').length,
-      totalRecords: jobs.reduce((sum, j) => sum + j.records_total, 0),
-      validRecords: jobs.reduce((sum, j) => sum + j.records_valid, 0),
-      invalidRecords: jobs.reduce((sum, j) => sum + j.records_invalid, 0),
+      totalRecords: jobs.reduce((sum, j) => sum + (j.total_records || 0), 0),
+      validRecords: jobs.reduce((sum, j) => sum + (j.valid_records || 0), 0),
+      invalidRecords: jobs.reduce((sum, j) => sum + (j.error_records || 0), 0),
     }
 
     return summary

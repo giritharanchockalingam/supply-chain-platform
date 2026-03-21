@@ -58,6 +58,7 @@ function useSupabaseQuery<TDb, TFrontend>(
     ascending?: boolean
     limit?: number
     filters?: Record<string, string | number | boolean | null>
+    select?: string
   }
 ): { data: TFrontend[]; loading: boolean; error: string | null; refetch: () => void } {
   const [data, setData] = useState<TFrontend[]>([])
@@ -67,7 +68,7 @@ function useSupabaseQuery<TDb, TFrontend>(
   const fetch = useCallback(async () => {
     try {
       setLoading(true)
-      let query = supabase.from(tableName).select('*')
+      let query = supabase.from(tableName).select(options?.select || '*')
 
       if (options?.filters) {
         Object.entries(options.filters).forEach(([key, value]) => {
@@ -119,12 +120,13 @@ export function useTrucks(limit = 100) {
     orderBy: 'priority_score',
     ascending: false,
     limit,
+    select: '*, carriers(name)',
   })
 }
 
 export function useDocks(limit = 50) {
   return useSupabaseQuery<DbDock, Dock>('docks', transformDock, {
-    orderBy: 'name',
+    orderBy: 'dock_number',
     ascending: true,
     limit,
   })
@@ -140,7 +142,7 @@ export function useYardExceptions(limit = 50) {
 
 export function useCameraEvents(limit = 20) {
   return useSupabaseQuery<DbCameraEvent, GateEvent>('camera_events', transformCameraEvent, {
-    orderBy: 'timestamp',
+    orderBy: 'captured_at',
     ascending: false,
     limit,
   })
@@ -189,7 +191,7 @@ export function useProducts(limit = 50) {
 
 export function useInventorySignals(limit = 100) {
   return useSupabaseQuery<DbInventorySignal, InventorySignal>('inventory_signals', transformInventorySignal, {
-    orderBy: 'received_date',
+    orderBy: 'report_date',
     ascending: false,
     limit,
   })
@@ -197,7 +199,7 @@ export function useInventorySignals(limit = 100) {
 
 export function useIngestionJobs(limit = 50) {
   return useSupabaseQuery<DbIngestionJob, DataIngestionJob>('ingestion_jobs', transformIngestionJob, {
-    orderBy: 'received_at',
+    orderBy: 'created_at',
     ascending: false,
     limit,
   })
@@ -205,7 +207,7 @@ export function useIngestionJobs(limit = 50) {
 
 export function useForecasts(limit = 200) {
   return useSupabaseQuery<DbForecast, ForecastRecord>('forecasts', transformForecast, {
-    orderBy: 'period',
+    orderBy: 'forecast_date',
     ascending: false,
     limit,
   })
@@ -221,7 +223,7 @@ export function useReplenishments(limit = 100) {
 
 export function usePlanningExceptions(limit = 50) {
   return useSupabaseQuery<DbPlanningException, PlanningException>('planning_exceptions', transformPlanningException, {
-    orderBy: 'detected_at',
+    orderBy: 'created_at',
     ascending: false,
     limit,
   })

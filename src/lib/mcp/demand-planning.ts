@@ -1,7 +1,7 @@
 /**
  * MCP Server: Demand Planning
  *
- * 18 tools for forecasting, replenishment, inventory signals,
+ * 14 tools for forecasting, replenishment, inventory signals,
  * data ingestion, and planning exceptions
  */
 
@@ -40,11 +40,11 @@ export class DemandPlanningServer extends BaseMCPServer {
         },
       },
     }, async (args) => {
-      let query = supabase.from('forecasts').select('*').order('period_start', { ascending: false }).limit(Number(args.limit) || 50);
+      let query = supabase.from('forecasts').select('*').order('forecast_date', { ascending: false }).limit(Number(args.limit) || 50);
       if (args.sku_id) query = query.eq('product_id', args.sku_id);
       if (args.customer_id) query = query.eq('customer_id', args.customer_id);
-      if (args.period_start) query = query.gte('period_start', args.period_start);
-      if (args.period_end) query = query.lte('period_end', args.period_end);
+      if (args.period_start) query = query.gte('forecast_date', args.period_start);
+      if (args.period_end) query = query.lte('forecast_date', args.period_end);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
       return createJsonResult({ forecasts: data, count: data?.length || 0 });
@@ -62,28 +62,28 @@ export class DemandPlanningServer extends BaseMCPServer {
       },
     }, async (args) => {
       const limit = Number(args.periods) || 12;
-      let query = supabase.from('forecasts').select('*').not('actual_demand', 'is', null).order('period_start', { ascending: false }).limit(limit);
+      let query = supabase.from('forecasts').select('*').not('actual_qty', 'is', null).order('forecast_date', { ascending: false }).limit(limit);
       if (args.sku_id) query = query.eq('product_id', args.sku_id);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
       const forecasts = data || [];
       if (forecasts.length === 0) return createTextResult('No forecast data with actuals available for accuracy calculation');
 
-      let totalAbsError = 0, totalBias = 0, totalActual = 0;
+      let totalAbsError = 0, totalBias = 0;
+      let n = 0;
       for (const f of forecasts) {
         const forecast = f.forecast_qty || 0;
-        const actual = f.actual_demand || 0;
+        const actual = f.actual_qty || 0;
         if (actual > 0) {
           totalAbsError += Math.abs(forecast - actual) / actual;
           totalBias += (forecast - actual) / actual;
-          totalActual += actual;
+          n++;
         }
       }
-      const n = forecasts.filter(f => (f.actual_demand || 0) > 0).length || 1;
       return createJsonResult({
-        mape: Math.round((totalAbsError / n) * 10000) / 100,
-        bias_pct: Math.round((totalBias / n) * 10000) / 100,
-        weighted_accuracy: Math.round((1 - totalAbsError / n) * 10000) / 100,
+        mape: n > 0 ? Math.round((totalAbsError / n) * 10000) / 100 : 0,
+        bias_pct: n > 0 ? Math.round((totalBias / n) * 10000) / 100 : 0,
+        weighted_accuracy: n > 0 ? Math.round((1 - totalAbsError / n) * 10000) / 100 : 0,
         periods_analyzed: n,
       });
     });
@@ -91,7 +91,7 @@ export class DemandPlanningServer extends BaseMCPServer {
     // ---- PRODUCT / SKU TOOLS ----
     this.registerTool({
       name: 'list_products',
-      description: 'List all products/SKUs with inventory levels and category info',
+      description: 'List all products/SKUs with category info',
       inputSchema: {
         type: 'object',
         properties: {
@@ -103,7 +103,7 @@ export class DemandPlanningServer extends BaseMCPServer {
     }, async (args) => {
       let query = supabase.from('products').select('*').order('name').limit(Number(args.limit) || 25);
       if (args.category) query = query.eq('category', args.category);
-      if (args.search) query = query.or(`name.ilike.%${args.search}%,sku_code.ilike.%${args.search}%`);
+      if (args.search) query = query.or(`name.ilike.%${args.search}%,sku.ilike.%${args.search}%`);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
       return createJsonResult({ products: data, count: data?.length || 0 });
@@ -111,7 +111,7 @@ export class DemandPlanningServer extends BaseMCPServer {
 
     this.registerTool({
       name: 'get_product_detail',
-      description: 'Get detailed product information including inventory, forecasts, and replenishment status',
+      description: 'Get detailed product information including forecasts and replenishment status',
       inputSchema: {
         type: 'object',
         properties: { product_id: { type: 'string', description: 'Product UUID' } },
@@ -120,9 +120,9 @@ export class DemandPlanningServer extends BaseMCPServer {
     }, async (args) => {
       const [product, forecasts, replenishments, signals] = await Promise.all([
         supabase.from('products').select('*').eq('id', args.product_id).single(),
-        supabase.from('forecasts').select('*').eq('product_id', args.product_id).order('period_start', { ascending: false }).limit(6),
+        supabase.from('forecasts').select('*').eq('product_id', args.product_id).order('forecast_date', { ascending: false }).limit(6),
         supabase.from('replenishments').select('*').eq('product_id', args.product_id).order('created_at', { ascending: false }).limit(5),
-        supabase.from('inventory_signals').select('*').eq('product_id', args.product_id).order('created_at', { ascending: false }).limit(5),
+        supabase.from('inventory_signals').select('*').eq('product_id', args.product_id).order('report_date', { ascending: false }).limit(5),
       ]);
       if (product.error) return createErrorResult(product.error.message);
       return createJsonResult({
@@ -140,14 +140,14 @@ export class DemandPlanningServer extends BaseMCPServer {
       inputSchema: {
         type: 'object',
         properties: {
-          source: { type: 'string', description: 'Filter by signal source', enum: ['pos', 'warehouse', 'supplier', 'ecommerce'] },
+          source: { type: 'string', description: 'Filter by signal source type' },
           product_id: { type: 'string', description: 'Filter by product' },
           limit: { type: 'number', description: 'Max results', default: 20 },
         },
       },
     }, async (args) => {
-      let query = supabase.from('inventory_signals').select('*').order('created_at', { ascending: false }).limit(Number(args.limit) || 20);
-      if (args.source) query = query.eq('source', args.source);
+      let query = supabase.from('inventory_signals').select('*').order('report_date', { ascending: false }).limit(Number(args.limit) || 20);
+      if (args.source) query = query.eq('source_type', args.source);
       if (args.product_id) query = query.eq('product_id', args.product_id);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
@@ -156,16 +156,17 @@ export class DemandPlanningServer extends BaseMCPServer {
 
     this.registerTool({
       name: 'get_low_stock_alerts',
-      description: 'Get products that are below reorder point or at critically low inventory',
+      description: 'Get replenishment recommendations marked as critical or high urgency (stockout risk)',
       inputSchema: { type: 'object', properties: {} },
     }, async () => {
       const { data, error } = await supabase
-        .from('products')
+        .from('replenishments')
         .select('*')
-        .lt('current_stock', 100) // simplified - could use reorder_point column
-        .order('current_stock', { ascending: true });
+        .in('urgency', ['critical', 'high'])
+        .eq('status', 'pending')
+        .order('urgency', { ascending: false });
       if (error) return createErrorResult(error.message);
-      return createJsonResult({ low_stock_products: data, count: data?.length || 0 });
+      return createJsonResult({ low_stock_alerts: data, count: data?.length || 0 });
     });
 
     // ---- REPLENISHMENT TOOLS ----
@@ -175,7 +176,7 @@ export class DemandPlanningServer extends BaseMCPServer {
       inputSchema: {
         type: 'object',
         properties: {
-          status: { type: 'string', description: 'Filter by status', enum: ['recommended', 'approved', 'ordered', 'in_transit', 'received', 'cancelled'] },
+          status: { type: 'string', description: 'Filter by status', enum: ['pending', 'approved', 'ordered', 'shipped', 'delivered'] },
           urgency: { type: 'string', description: 'Filter by urgency', enum: ['critical', 'high', 'medium', 'low'] },
           limit: { type: 'number', description: 'Max results', default: 25 },
         },
@@ -203,7 +204,7 @@ export class DemandPlanningServer extends BaseMCPServer {
     }, async (args) => {
       const { data, error } = await supabase
         .from('replenishments')
-        .update({ status: 'approved', approved_at: new Date().toISOString(), notes: args.notes || 'Approved via AI assistant' })
+        .update({ status: 'approved', approved_at: new Date().toISOString(), approved_by: args.notes || 'AI assistant' })
         .eq('id', args.replenishment_id)
         .select();
       if (error) return createErrorResult(error.message);
@@ -213,17 +214,17 @@ export class DemandPlanningServer extends BaseMCPServer {
     // ---- CUSTOMER TOOLS ----
     this.registerTool({
       name: 'list_customers',
-      description: 'List customers with their tier, volume, and forecast status',
+      description: 'List customers with their segment, region, and data quality',
       inputSchema: {
         type: 'object',
         properties: {
-          tier: { type: 'string', description: 'Filter by tier', enum: ['platinum', 'gold', 'silver', 'standard'] },
+          segment: { type: 'string', description: 'Filter by segment', enum: ['enterprise', 'mid_market', 'boutique'] },
           search: { type: 'string', description: 'Search by name' },
         },
       },
     }, async (args) => {
       let query = supabase.from('customers').select('*').order('name');
-      if (args.tier) query = query.eq('tier', args.tier);
+      if (args.segment) query = query.eq('segment', args.segment);
       if (args.search) query = query.ilike('name', `%${args.search}%`);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
@@ -237,15 +238,15 @@ export class DemandPlanningServer extends BaseMCPServer {
       inputSchema: {
         type: 'object',
         properties: {
-          status: { type: 'string', description: 'Filter by status', enum: ['running', 'completed', 'failed', 'pending'] },
-          source: { type: 'string', description: 'Filter by data source' },
+          status: { type: 'string', description: 'Filter by status', enum: ['queued', 'processing', 'completed', 'failed', 'needs_review'] },
+          source: { type: 'string', description: 'Filter by data source type' },
           limit: { type: 'number', description: 'Max results', default: 15 },
         },
       },
     }, async (args) => {
       let query = supabase.from('ingestion_jobs').select('*').order('created_at', { ascending: false }).limit(Number(args.limit) || 15);
       if (args.status) query = query.eq('status', args.status);
-      if (args.source) query = query.eq('source_system', args.source);
+      if (args.source) query = query.eq('source_type', args.source);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
       return createJsonResult({ jobs: data, count: data?.length || 0 });
@@ -258,7 +259,7 @@ export class DemandPlanningServer extends BaseMCPServer {
       inputSchema: {
         type: 'object',
         properties: {
-          severity: { type: 'string', description: 'Filter by severity', enum: ['critical', 'high', 'medium', 'low'] },
+          severity: { type: 'string', description: 'Filter by severity', enum: ['critical', 'warning', 'info'] },
           type: { type: 'string', description: 'Filter by type' },
           limit: { type: 'number', description: 'Max results', default: 20 },
         },
@@ -266,7 +267,7 @@ export class DemandPlanningServer extends BaseMCPServer {
     }, async (args) => {
       let query = supabase.from('planning_exceptions').select('*').order('created_at', { ascending: false }).limit(Number(args.limit) || 20);
       if (args.severity) query = query.eq('severity', args.severity);
-      if (args.type) query = query.eq('type', args.type);
+      if (args.type) query = query.eq('exception_type', args.type);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
       return createJsonResult({ exceptions: data, count: data?.length || 0 });
@@ -278,44 +279,39 @@ export class DemandPlanningServer extends BaseMCPServer {
       description: 'Get demand planning KPIs: forecast accuracy, fill rate, inventory turns, signal freshness',
       inputSchema: { type: 'object', properties: {} },
     }, async () => {
-      const [forecasts, products, replenishments, exceptions, signals] = await Promise.all([
-        supabase.from('forecasts').select('forecast_qty, actual_demand, confidence').not('actual_demand', 'is', null).limit(100),
-        supabase.from('products').select('current_stock, reorder_point, category').limit(100),
+      const [forecasts, replenishments, exceptions, signals] = await Promise.all([
+        supabase.from('forecasts').select('forecast_qty, actual_qty, mape').not('actual_qty', 'is', null).limit(100),
         supabase.from('replenishments').select('status, urgency, estimated_value').limit(100),
-        supabase.from('planning_exceptions').select('severity, status').eq('status', 'active'),
-        supabase.from('inventory_signals').select('source, created_at').order('created_at', { ascending: false }).limit(50),
+        supabase.from('planning_exceptions').select('severity').is('resolved_at', null),
+        supabase.from('inventory_signals').select('source_type, report_date').order('report_date', { ascending: false }).limit(50),
       ]);
 
       const fData = forecasts.data || [];
-      const pData = products.data || [];
       const rData = replenishments.data || [];
       const eData = exceptions.data || [];
 
       // Forecast accuracy
       let mapeSum = 0, n = 0;
       for (const f of fData) {
-        if (f.actual_demand > 0) {
-          mapeSum += Math.abs((f.forecast_qty - f.actual_demand) / f.actual_demand);
+        if ((f.actual_qty || 0) > 0) {
+          mapeSum += Math.abs((f.forecast_qty - f.actual_qty) / f.actual_qty);
           n++;
         }
       }
-      const avgConfidence = fData.length > 0 ? Math.round(fData.reduce((s, f) => s + (f.confidence || 0), 0) / fData.length * 100) : 0;
 
       // Replenishment pipeline value
-      const pendingValue = rData.filter(r => ['recommended', 'approved', 'ordered'].includes(r.status))
+      const pendingValue = rData.filter(r => ['pending', 'approved', 'ordered'].includes(r.status))
         .reduce((s, r) => s + (r.estimated_value || 0), 0);
 
       return createJsonResult({
         forecast_accuracy_pct: n > 0 ? Math.round((1 - mapeSum / n) * 10000) / 100 : 0,
-        avg_forecast_confidence: avgConfidence,
-        total_skus: pData.length,
-        low_stock_skus: pData.filter(p => (p.current_stock || 0) < (p.reorder_point || 50)).length,
-        pending_replenishments: rData.filter(r => r.status === 'recommended').length,
+        total_forecasts_with_actuals: n,
+        pending_replenishments: rData.filter(r => r.status === 'pending').length,
         approved_replenishments: rData.filter(r => r.status === 'approved').length,
         replenishment_pipeline_value: Math.round(pendingValue),
         active_exceptions: eData.length,
         critical_exceptions: eData.filter(e => e.severity === 'critical').length,
-        signal_sources: [...new Set((signals.data || []).map(s => s.source))],
+        signal_sources: [...new Set((signals.data || []).map(s => s.source_type))],
       });
     });
   }
