@@ -24,6 +24,8 @@ import {
   Settings,
   Brain,
   Layers,
+  Shield,
+  ScanLine,
 } from 'lucide-react';
 
 const AICommandCenter = dynamic(() => import('@/components/ai/AICommandCenter'), { ssr: false });
@@ -60,6 +62,8 @@ const pageBanners: Record<string, { title: string; subtitle: string; gradient: s
   '/planning/workbench': { title: 'Planner Workbench', subtitle: 'Collaborative planning tools and scenario analysis', gradient: 'from-lime-600 to-green-700' },
   '/planning/reports': { title: 'Planning Reports', subtitle: 'Forecast performance, inventory health, and KPIs', gradient: 'from-amber-600 to-orange-700' },
   '/ai': { title: 'AI Command Center', subtitle: 'Multi-LLM orchestration with MCP tools', gradient: 'from-purple-600 to-violet-700' },
+  '/security': { title: 'Trailer Security', subtitle: 'Seal verification, chain of custody, and geofence monitoring', gradient: 'from-red-600 via-red-700 to-rose-800' },
+  '/data-capture': { title: 'Data Capture & Pipeline', subtitle: 'Real-time ingestion, scan events, and cross-system reconciliation', gradient: 'from-teal-600 via-cyan-700 to-blue-800' },
 };
 
 export function RootLayoutClient({ children }: { children: React.ReactNode }) {
@@ -175,6 +179,52 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
               >
                 <Brain size={20} className="flex-shrink-0" />
                 {sidebarOpen && <span className="text-sm font-medium">AI Command Center</span>}
+              </Link>
+            </div>
+          </div>
+
+          {/* Trailer Security */}
+          <div>
+            {sidebarOpen && (
+              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+                Security
+              </h2>
+            )}
+            <div className="space-y-2">
+              <Link
+                href="/security"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname.startsWith('/security')
+                    ? 'bg-red-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-800'
+                }`}
+                title="Trailer Security"
+              >
+                <Shield size={20} className="flex-shrink-0" />
+                {sidebarOpen && <span className="text-sm font-medium">Trailer Security</span>}
+              </Link>
+            </div>
+          </div>
+
+          {/* Data Capture */}
+          <div>
+            {sidebarOpen && (
+              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+                Data Capture
+              </h2>
+            )}
+            <div className="space-y-2">
+              <Link
+                href="/data-capture"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname.startsWith('/data-capture')
+                    ? 'bg-cyan-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-800'
+                }`}
+                title="Data Capture & Pipeline"
+              >
+                <ScanLine size={20} className="flex-shrink-0" />
+                {sidebarOpen && <span className="text-sm font-medium">Data Pipeline</span>}
               </Link>
             </div>
           </div>
