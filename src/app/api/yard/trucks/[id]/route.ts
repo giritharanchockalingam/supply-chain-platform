@@ -3,10 +3,11 @@ import { getTruckById, updateTruckStatus } from '@/lib/data-access'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const truck = await getTruckById(params.id)
+    const { id } = await params
+    const truck = await getTruckById(id)
 
     if (!truck) {
       return NextResponse.json(
@@ -36,9 +37,10 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { status } = body
 
@@ -52,7 +54,7 @@ export async function PATCH(
       )
     }
 
-    const success = await updateTruckStatus(params.id, status)
+    const success = await updateTruckStatus(id, status)
 
     if (!success) {
       return NextResponse.json(
@@ -64,7 +66,7 @@ export async function PATCH(
       )
     }
 
-    const updatedTruck = await getTruckById(params.id)
+    const updatedTruck = await getTruckById(id)
 
     return NextResponse.json({
       success: true,
