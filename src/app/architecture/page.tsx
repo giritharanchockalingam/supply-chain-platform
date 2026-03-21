@@ -110,7 +110,7 @@ const integrations: Integration[] = [
   { name: 'Supabase', description: 'Managed PostgreSQL with PostgREST API, real-time subscriptions, pgvector for RAG embeddings', status: 'connected', tier: 'Freemium', capabilities: ['PostgreSQL', 'Real-time', 'Vector Search', 'Auth'], category: 'data-platform', url: 'https://supabase.com' },
   { name: 'Apache Kafka', description: 'Distributed event streaming for real-time yard events, WMS signals, and IoT telemetry', status: 'coming_soon', tier: 'Enterprise', capabilities: ['Event Streaming', 'Pub/Sub', 'Replay', 'Partitioning'], category: 'data-platform' },
   { name: 'Snowflake', description: 'Cloud data warehouse for historical analytics, demand modeling, and forecast training data', status: 'placeholder', tier: 'Enterprise', capabilities: ['Data Warehouse', 'Time Travel', 'Data Sharing', 'ML Features'], category: 'data-platform' },
-  { name: 'Redis', description: 'In-memory cache for session state, real-time truck positions, and LLM response caching', status: 'available', tier: 'Freemium', capabilities: ['Caching', 'Pub/Sub', 'Geo Queries', 'Rate Limiting'], category: 'data-platform' },
+  { name: 'Redis', description: 'Upstash serverless Redis for API rate limiting, response caching, and real-time session state', status: 'connected', tier: 'Freemium', capabilities: ['Caching', 'Pub/Sub', 'Geo Queries', 'Rate Limiting'], category: 'data-platform', url: 'https://upstash.com' },
 
   // AI / ML
   { name: 'Anthropic Claude', description: 'Primary LLM for complex supply chain queries, exception analysis, and multi-step reasoning', status: 'connected', tier: 'Freemium', capabilities: ['Complex Reasoning', 'Tool Use', 'Long Context', 'Code Gen'], category: 'ai-ml', url: 'https://anthropic.com' },
@@ -129,6 +129,7 @@ const integrations: Integration[] = [
   { name: 'Vercel', description: 'Edge deployment platform with global CDN, serverless functions, and instant rollbacks', status: 'connected', tier: 'Freemium', capabilities: ['Edge CDN', 'Serverless', 'Preview Deploys', 'Analytics'], category: 'cloud-infra', url: 'https://vercel.com' },
   { name: 'AWS', description: 'Amazon Web Services for S3 storage, Lambda functions, and SQS message queuing', status: 'available', tier: 'Paid', capabilities: ['S3', 'Lambda', 'SQS', 'CloudWatch'], category: 'cloud-infra' },
   { name: 'GCP Cloud Run', description: 'Google Cloud for containerized microservices, Cloud Build, and BigQuery analytics', status: 'placeholder', tier: 'Freemium', capabilities: ['Containers', 'Cloud Build', 'BigQuery', 'Pub/Sub'], category: 'cloud-infra' },
+  { name: 'Upstash QStash', description: 'Serverless message queue for background job processing, webhook delivery, and delayed tasks (500/day free)', status: 'connected', tier: 'Free', capabilities: ['Message Queue', 'Webhooks', 'Delayed Jobs', 'Retries'], category: 'cloud-infra', url: 'https://upstash.com' },
 
   // DevOps
   { name: 'GitHub', description: 'Source control, pull requests, GitHub Actions CI/CD, and issue tracking', status: 'connected', tier: 'Free', capabilities: ['Git Repos', 'Pull Requests', 'Actions CI/CD', 'Issues'], category: 'devops', url: 'https://github.com' },
@@ -136,13 +137,15 @@ const integrations: Integration[] = [
   { name: 'ArgoCD', description: 'GitOps continuous delivery for Kubernetes-based supply chain microservices', status: 'placeholder', tier: 'Free', capabilities: ['GitOps', 'K8s Deploy', 'Sync Policies', 'Rollbacks'], category: 'devops' },
 
   // Monitoring
-  { name: 'Vercel Analytics', description: 'Built-in web vitals, performance metrics, and audience insights', status: 'connected', tier: 'Freemium', capabilities: ['Web Vitals', 'Performance', 'Audience', 'Real User Monitoring'], category: 'monitoring' },
+  { name: 'Vercel Analytics', description: 'Built-in web vitals, performance metrics, and audience insights', status: 'connected', tier: 'Freemium', capabilities: ['Web Vitals', 'Performance', 'Audience', 'Real User Monitoring'], category: 'monitoring', url: 'https://vercel.com/analytics' },
   { name: 'Datadog', description: 'Full-stack observability with APM, log management, infrastructure monitoring', status: 'coming_soon', tier: 'Paid', capabilities: ['APM', 'Logs', 'Dashboards', 'Alerts'], category: 'monitoring' },
   { name: 'Grafana + Prometheus', description: 'Open-source metrics visualization and alerting for yard operations SLAs', status: 'available', tier: 'Free', capabilities: ['Dashboards', 'Alerts', 'PromQL', 'Annotations'], category: 'monitoring' },
+  { name: 'Sentry', description: 'Error monitoring, performance tracking, and session replay for production issue detection', status: 'connected', tier: 'Free', capabilities: ['Error Tracking', 'Performance', 'Session Replay', 'Release Health'], category: 'monitoring', url: 'https://sentry.io' },
   { name: 'PagerDuty', description: 'Incident management and on-call scheduling for critical supply chain disruptions', status: 'placeholder', tier: 'Paid', capabilities: ['Incidents', 'On-Call', 'Escalation', 'Runbooks'], category: 'monitoring' },
 
   // Communication
   { name: 'Activity Feed', description: 'Built-in real-time notifications for truck arrivals, exceptions, forecast alerts', status: 'connected', tier: 'Built-in', capabilities: ['Real-time', 'Truck Alerts', 'Exception Alerts', 'Forecast Alerts'], category: 'communication' },
+  { name: 'Resend', description: 'Transactional email API for exception alerts, daily summaries, and system notifications (3K/month free)', status: 'connected', tier: 'Free', capabilities: ['Exception Alerts', 'Daily Summaries', 'HTML Templates', 'Webhooks'], category: 'communication', url: 'https://resend.com' },
   { name: 'Slack', description: 'Team messaging with channels for yard ops, planning, and automated alert routing', status: 'available', tier: 'Freemium', capabilities: ['Channels', 'Webhooks', 'Bot Commands', 'Threads'], category: 'communication' },
   { name: 'Microsoft Teams', description: 'Enterprise communication for multi-DC coordination and management reporting', status: 'coming_soon', tier: 'Paid', capabilities: ['Channels', 'Chat', 'Meetings', 'Adaptive Cards'], category: 'communication' },
 

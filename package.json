@@ -9,13 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.45.0",
     "@supabase/supabase-js": "^2.99.3",
+    "@upstash/qstash": "^2.10.1",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.577.0",
     "next": "16.2.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.8.0",
+    "resend": "^6.9.4",
     "vercel": "^50.34.3"
   },
   "devDependencies": {
