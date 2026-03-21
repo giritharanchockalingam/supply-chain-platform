@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { RootLayoutClient } from "./_client";
+import { AuthLayoutWrapper } from "./auth-wrapper";
 
 export const metadata: Metadata = {
   title: "Supply Chain Command Center",
-  description: "Yard Management and Demand Planning System",
+  description: "Yard Management, Trailer Security, Demand Planning & AI Intelligence",
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex bg-slate-50" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-        <RootLayoutClient>{children}</RootLayoutClient>
+        <AuthLayoutWrapper>{children}</AuthLayoutWrapper>
       </body>
     </html>
   );

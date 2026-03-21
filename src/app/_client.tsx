@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { useAuth } from '@/lib/auth';
 import {
   Menu,
   X,
@@ -26,6 +27,7 @@ import {
   Layers,
   Shield,
   ScanLine,
+  LogOut,
 } from 'lucide-react';
 
 const AICommandCenter = dynamic(() => import('@/components/ai/AICommandCenter'), { ssr: false });
@@ -69,6 +71,7 @@ const pageBanners: Record<string, { title: string; subtitle: string; gradient: s
 export function RootLayoutClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
 
   const isActive = (href: string) => {
     return pathname.startsWith(href.split('/').slice(0, 3).join('/'));
@@ -277,8 +280,16 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
               </button>
             </div>
 
-            <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm cursor-pointer hover:bg-blue-700">
-              JD
+            <button
+              onClick={() => signOut()}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Sign out"
+            >
+              <LogOut size={20} className="text-gray-500" />
+            </button>
+
+            <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm cursor-pointer hover:bg-blue-700" title={user?.email || ''}>
+              {user?.email?.substring(0, 2).toUpperCase() || 'U'}
             </div>
           </div>
         </header>
