@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import {
   Menu,
   X,
@@ -21,7 +22,10 @@ import {
   Bell,
   Search,
   Settings,
+  Brain,
 } from 'lucide-react';
+
+const AICommandCenter = dynamic(() => import('@/components/ai/AICommandCenter'), { ssr: false });
 
 const yardNavItems = [
   { label: 'Dashboard', href: '/yard/dashboard', icon: LayoutGrid },
@@ -131,6 +135,29 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
               })}
             </div>
           </div>
+
+          {/* AI Command Center */}
+          <div>
+            {sidebarOpen && (
+              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+                AI Intelligence
+              </h2>
+            )}
+            <div className="space-y-2">
+              <Link
+                href="/ai"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  pathname.startsWith('/ai')
+                    ? 'bg-purple-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-800'
+                }`}
+                title="AI Command Center"
+              >
+                <Brain size={20} className="flex-shrink-0" />
+                {sidebarOpen && <span className="text-sm font-medium">AI Command Center</span>}
+              </Link>
+            </div>
+          </div>
         </nav>
       </div>
 
@@ -166,6 +193,9 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
         {/* Page Content */}
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
+
+      {/* AI Command Center - Available on all pages */}
+      <AICommandCenter currentPage={pathname.replace(/^\//, '')} />
     </>
   );
 }
