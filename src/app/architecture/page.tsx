@@ -545,14 +545,269 @@ export default function ArchitecturePage() {
 
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                { domain: 'Business', title: 'Supply Chain Value Stream', phase: 'Phase B', desc: 'End-to-end value delivery from gate arrival through dock operations to replenishment execution', color: 'from-emerald-500 to-teal-600', icon: Building2,
-                  diagram: `Gate Check-In → Priority Engine → Dock Assignment → Unloading → WMS Confirmation → Departure\n                  ↓                                                        ↓\n         Exception Engine ←←←←←←←←←←←←←←←← Signal Processing\n                  ↓                                                        ↓\n         AI Command Center ←←←←←←←←←←← Demand Planning ← Forecast Engine` },
-                { domain: 'Application', title: 'Platform Application Architecture', phase: 'Phase C', desc: 'Next.js SPA with MCP orchestration layer, multi-LLM routing, and domain service components', color: 'from-cyan-500 to-blue-600', icon: Boxes,
-                  diagram: `┌─────────────────────────────────────────────────┐\n│              Next.js 16 App Router                │\n│  ┌──────────┐  ┌──────────┐  ┌──────────────┐   │\n│  │   Yard    │  │ Planning │  │  AI Command  │   │\n│  │  Module   │  │  Module  │  │   Center     │   │\n│  └────┬─────┘  └────┬─────┘  └──────┬───────┘   │\n│       └──────────────┼───────────────┘           │\n│              ┌───────┴────────┐                  │\n│              │ MCP Orchestrator│                  │\n│              │  (31 Tools)     │                  │\n│              └───────┬────────┘                  │\n│       ┌──────────────┼──────────────┐            │\n│  ┌────┴────┐   ┌─────┴────┐   ┌────┴────┐      │\n│  │  Claude  │   │  GPT-4o  │   │   Groq  │      │\n│  └─────────┘   └──────────┘   └─────────┘      │\n└─────────────────────────────────────────────────┘` },
-                { domain: 'Data', title: 'Supply Chain Data Model', phase: 'Phase C', desc: 'PostgreSQL supply_chain schema with 21+ tables, pgvector embeddings, and PostgREST API', color: 'from-amber-500 to-orange-600', icon: Database,
-                  diagram: `┌──────────────┐    ┌──────────────┐    ┌──────────────┐\n│distribution  │───▶│    docks      │───▶│   trucks     │\n│  _centers    │    │ (dock_number, │    │(license_plate│\n│              │    │  status)      │    │ carrier_id)  │\n└──────────────┘    └──────────────┘    └──────┬───────┘\n                                               │\n┌──────────────┐    ┌──────────────┐    ┌──────┴───────┐\n│  products    │───▶│  forecasts   │    │bills_of_lading│\n│ (sku, name)  │    │(forecast_qty)│    │(bol_number)   │\n└──────┬───────┘    └──────────────┘    └──────────────┘\n       │\n┌──────┴───────┐    ┌──────────────┐    ┌──────────────┐\n│replenishments│    │  inventory   │    │yard_exceptions│\n│(recommended  │    │  _signals    │    │(exception_type│\n│     _qty)    │    │(on_hand_qty) │    │  severity)    │\n└──────────────┘    └──────────────┘    └──────────────┘` },
-                { domain: 'Technology', title: 'Platform Decomposition', phase: 'Phase D', desc: 'Vercel Edge + Supabase Cloud + Multi-LLM Provider architecture with CI/CD pipeline', color: 'from-rose-500 to-pink-600', icon: Server,
-                  diagram: `┌──── Client Tier ────┐  ┌──── Edge Tier ─────┐\n│  Browser (React)    │─▶│  Vercel Edge CDN   │\n│  Tailwind + Charts  │  │  Serverless Funcs   │\n└─────────────────────┘  └────────┬───────────┘\n                                  │\n┌──── API Tier ───────┐  ┌───────┴───────────┐\n│  PostgREST API      │  │  AI API Routes    │\n│  (supply_chain)     │  │  /api/ai/chat     │\n└────────┬────────────┘  └────────┬──────────┘\n         │                        │\n┌────────┴────────────┐  ┌────────┴──────────┐\n│  Supabase PostgreSQL│  │  LLM Providers    │\n│  + pgvector + Auth  │  │  Claude/GPT/Groq  │\n└─────────────────────┘  └───────────────────┘` },
+                {
+                  domain: 'Business',
+                  title: 'Supply Chain Value Stream',
+                  phase: 'Phase B',
+                  desc: 'End-to-end value delivery from gate arrival through dock operations to replenishment execution',
+                  color: 'from-emerald-500 to-teal-600',
+                  icon: Building2,
+                  diagram: (
+                    <svg viewBox="0 0 1000 300" className="w-full h-auto">
+                      <defs>
+                        <linearGradient id="businessGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#10b981" />
+                          <stop offset="100%" stopColor="#0d9488" />
+                        </linearGradient>
+                        <filter id="shadow">
+                          <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3" />
+                        </filter>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                          <polygon points="0 0, 10 3, 0 6" fill="#94a3b8" />
+                        </marker>
+                      </defs>
+
+                      {/* Main flow boxes */}
+                      {[
+                        { x: 50, label: 'Gate\nCheck-In' },
+                        { x: 200, label: 'Priority\nEngine' },
+                        { x: 350, label: 'Dock\nAssignment' },
+                        { x: 500, label: 'Unloading' },
+                        { x: 650, label: 'WMS\nConfirm' },
+                        { x: 800, label: 'Departure' }
+                      ].map((box, i) => (
+                        <g key={i}>
+                          <rect x={box.x} y="40" width="120" height="80" rx="8" fill="url(#businessGrad)" filter="url(#shadow)" opacity="0.9" />
+                          <text x={box.x + 60} y="90" textAnchor="middle" fill="white" fontSize="13" fontWeight="600">{box.label}</text>
+                        </g>
+                      ))}
+
+                      {/* Connecting arrows */}
+                      {[50, 200, 350, 500, 650].map((x, i) => (
+                        <line key={`arrow-${i}`} x1={x + 120} y1="80" x2={x + 140} y2="80" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                      ))}
+
+                      {/* Bottom flow - Exception & AI */}
+                      <g>
+                        <rect x="50" y="180" width="120" height="80" rx="8" fill="url(#businessGrad)" filter="url(#shadow)" opacity="0.9" />
+                        <text x="110" y="225" textAnchor="middle" fill="white" fontSize="13" fontWeight="600">Exception\nEngine</text>
+                      </g>
+
+                      <g>
+                        <rect x="650" y="180" width="120" height="80" rx="8" fill="url(#businessGrad)" filter="url(#shadow)" opacity="0.9" />
+                        <text x="710" y="225" textAnchor="middle" fill="white" fontSize="13" fontWeight="600">AI Command\nCenter</text>
+                      </g>
+
+                      {/* Vertical connectors */}
+                      <line x1="110" y1="120" x2="110" y2="180" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                      <line x1="710" y1="120" x2="710" y2="180" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                    </svg>
+                  )
+                },
+                {
+                  domain: 'Application',
+                  title: 'Platform Application Architecture',
+                  phase: 'Phase C',
+                  desc: 'Next.js SPA with MCP orchestration layer, multi-LLM routing, and domain service components',
+                  color: 'from-cyan-500 to-blue-600',
+                  icon: Boxes,
+                  diagram: (
+                    <svg viewBox="0 0 1000 400" className="w-full h-auto">
+                      <defs>
+                        <linearGradient id="appGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#06b6d4" />
+                          <stop offset="100%" stopColor="#2563eb" />
+                        </linearGradient>
+                        <filter id="shadow2">
+                          <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3" />
+                        </filter>
+                        <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                          <polygon points="0 0, 10 3, 0 6" fill="#94a3b8" />
+                        </marker>
+                      </defs>
+
+                      {/* Next.js App Router - top layer */}
+                      <rect x="100" y="20" width="800" height="80" rx="8" fill="url(#appGrad)" filter="url(#shadow2)" opacity="0.85" />
+                      <text x="500" y="55" textAnchor="middle" fill="white" fontSize="15" fontWeight="700">Next.js 16 App Router</text>
+
+                      {/* Module boxes */}
+                      {[
+                        { x: 150, label: 'Yard\nModule' },
+                        { x: 400, label: 'Planning\nModule' },
+                        { x: 650, label: 'AI Command\nCenter' }
+                      ].map((box, i) => (
+                        <g key={i}>
+                          <rect x={box.x} y="110" width="120" height="70" rx="6" fill="url(#appGrad)" filter="url(#shadow2)" opacity="0.75" />
+                          <text x={box.x + 60} y="150" textAnchor="middle" fill="white" fontSize="12" fontWeight="600">{box.label}</text>
+                        </g>
+                      ))}
+
+                      {/* Connectors down from modules */}
+                      {[210, 460, 710].map((x, i) => (
+                        <line key={`down-${i}`} x1={x} y1="180" x2={x} y2="210" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead2)" />
+                      ))}
+
+                      {/* MCP Orchestrator */}
+                      <rect x="200" y="210" width="600" height="90" rx="8" fill="url(#appGrad)" filter="url(#shadow2)" opacity="0.9" />
+                      <text x="500" y="245" textAnchor="middle" fill="white" fontSize="15" fontWeight="700">MCP Orchestrator</text>
+                      <text x="500" y="270" textAnchor="middle" fill="white" fontSize="12" opacity="0.9">(31 Tools)</text>
+
+                      {/* LLM Provider boxes */}
+                      {[
+                        { x: 150, label: 'Claude' },
+                        { x: 400, label: 'GPT-4o' },
+                        { x: 650, label: 'Groq' }
+                      ].map((box, i) => (
+                        <g key={i}>
+                          <line x1={box.x + 60} y1="300" x2={box.x + 60} y2="330" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead2)" />
+                          <rect x={box.x} y="330" width="120" height="60" rx="6" fill="url(#appGrad)" filter="url(#shadow2)" opacity="0.85" />
+                          <text x={box.x + 60} y="365" textAnchor="middle" fill="white" fontSize="13" fontWeight="600">{box.label}</text>
+                        </g>
+                      ))}
+                    </svg>
+                  )
+                },
+                {
+                  domain: 'Data',
+                  title: 'Supply Chain Data Model',
+                  phase: 'Phase C',
+                  desc: 'PostgreSQL supply_chain schema with 21+ tables, pgvector embeddings, and PostgREST API',
+                  color: 'from-amber-500 to-orange-600',
+                  icon: Database,
+                  diagram: (
+                    <svg viewBox="0 0 1000 380" className="w-full h-auto">
+                      <defs>
+                        <linearGradient id="dataGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#f59e0b" />
+                          <stop offset="100%" stopColor="#ea580c" />
+                        </linearGradient>
+                        <filter id="shadow3">
+                          <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3" />
+                        </filter>
+                        <marker id="arrowhead3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                          <polygon points="0 0, 10 3, 0 6" fill="#94a3b8" />
+                        </marker>
+                      </defs>
+
+                      {/* Top row */}
+                      {[
+                        { x: 100, label: 'distribution\n_centers' },
+                        { x: 380, label: 'docks\n(dock_number)' },
+                        { x: 660, label: 'trucks\n(license_plate)' }
+                      ].map((box, i) => (
+                        <g key={i}>
+                          <rect x={box.x} y="20" width="140" height="80" rx="6" fill="url(#dataGrad)" filter="url(#shadow3)" opacity="0.85" />
+                          <text x={box.x + 70} y="65" textAnchor="middle" fill="white" fontSize="12" fontWeight="600">{box.label}</text>
+                          {i < 2 && <line x1={box.x + 140} y1="60" x2={box.x + 160} y2="60" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead3)" />}
+                        </g>
+                      ))}
+
+                      {/* Middle row */}
+                      {[
+                        { x: 100, label: 'products\n(sku, name)' },
+                        { x: 380, label: 'forecasts\n(forecast_qty)' },
+                        { x: 660, label: 'bills_of_lading\n(bol_number)' }
+                      ].map((box, i) => (
+                        <g key={i}>
+                          <rect x={box.x} y="180" width="140" height="80" rx="6" fill="url(#dataGrad)" filter="url(#shadow3)" opacity="0.85" />
+                          <text x={box.x + 70} y="225" textAnchor="middle" fill="white" fontSize="12" fontWeight="600">{box.label}</text>
+                          {i < 2 && <line x1={box.x + 140} y1="220" x2={box.x + 160} y2="220" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead3)" />}
+                        </g>
+                      ))}
+
+                      {/* Connections from top to middle */}
+                      <line x1="240" y1="100" x2="150" y2="180" stroke="#94a3b8" strokeWidth="2" strokeDasharray="4" markerEnd="url(#arrowhead3)" />
+                      <line x1="730" y1="100" x2="730" y2="180" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead3)" />
+
+                      {/* Bottom row */}
+                      {[
+                        { x: 100, label: 'replenishments\n(recommended_qty)' },
+                        { x: 380, label: 'inventory\n_signals\n(on_hand_qty)' },
+                        { x: 660, label: 'yard_exceptions\n(exception_type)' }
+                      ].map((box, i) => (
+                        <g key={i}>
+                          <rect x={box.x} y="320" width="140" height="80" rx="6" fill="url(#dataGrad)" filter="url(#shadow3)" opacity="0.85" />
+                          <text x={box.x + 70} y="368" textAnchor="middle" fill="white" fontSize="11" fontWeight="600">{box.label}</text>
+                        </g>
+                      ))}
+
+                      {/* Connections from middle to bottom */}
+                      <line x1="170" y1="260" x2="170" y2="320" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead3)" />
+                      <line x1="450" y1="260" x2="450" y2="320" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead3)" />
+                    </svg>
+                  )
+                },
+                {
+                  domain: 'Technology',
+                  title: 'Platform Decomposition',
+                  phase: 'Phase D',
+                  desc: 'Vercel Edge + Supabase Cloud + Multi-LLM Provider architecture with CI/CD pipeline',
+                  color: 'from-rose-500 to-pink-600',
+                  icon: Server,
+                  diagram: (
+                    <svg viewBox="0 0 1000 380" className="w-full h-auto">
+                      <defs>
+                        <linearGradient id="techGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#f43f5e" />
+                          <stop offset="100%" stopColor="#ec4899" />
+                        </linearGradient>
+                        <filter id="shadow4">
+                          <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3" />
+                        </filter>
+                        <marker id="arrowhead4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                          <polygon points="0 0, 10 3, 0 6" fill="#94a3b8" />
+                        </marker>
+                      </defs>
+
+                      {/* Tier 1 - Client */}
+                      <rect x="80" y="20" width="180" height="80" rx="6" fill="url(#techGrad)" filter="url(#shadow4)" opacity="0.85" />
+                      <text x="170" y="45" textAnchor="middle" fill="white" fontSize="13" fontWeight="700">Client Tier</text>
+                      <text x="170" y="65" textAnchor="middle" fill="white" fontSize="11">Browser (React)</text>
+                      <text x="170" y="82" textAnchor="middle" fill="white" fontSize="11">Tailwind + Charts</text>
+
+                      {/* Tier 2 - Edge */}
+                      <rect x="380" y="20" width="180" height="80" rx="6" fill="url(#techGrad)" filter="url(#shadow4)" opacity="0.85" />
+                      <text x="470" y="45" textAnchor="middle" fill="white" fontSize="13" fontWeight="700">Edge Tier</text>
+                      <text x="470" y="65" textAnchor="middle" fill="white" fontSize="11">Vercel Edge CDN</text>
+                      <text x="470" y="82" textAnchor="middle" fill="white" fontSize="11">Serverless Funcs</text>
+
+                      {/* Arrow from Client to Edge */}
+                      <line x1="260" y1="60" x2="380" y2="60" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead4)" />
+
+                      {/* Tier 3 - API */}
+                      <rect x="80" y="180" width="180" height="80" rx="6" fill="url(#techGrad)" filter="url(#shadow4)" opacity="0.85" />
+                      <text x="170" y="205" textAnchor="middle" fill="white" fontSize="13" fontWeight="700">API Tier</text>
+                      <text x="170" y="225" textAnchor="middle" fill="white" fontSize="11">PostgREST API</text>
+                      <text x="170" y="242" textAnchor="middle" fill="white" fontSize="11">(supply_chain)</text>
+
+                      {/* Tier 4 - AI API */}
+                      <rect x="380" y="180" width="180" height="80" rx="6" fill="url(#techGrad)" filter="url(#shadow4)" opacity="0.85" />
+                      <text x="470" y="205" textAnchor="middle" fill="white" fontSize="13" fontWeight="700">AI API Routes</text>
+                      <text x="470" y="225" textAnchor="middle" fill="white" fontSize="11">/api/ai/chat</text>
+                      <text x="470" y="242" textAnchor="middle" fill="white" fontSize="11">Multi-LLM</text>
+
+                      {/* Arrows from Edge/Client down to API */}
+                      <line x1="170" y1="100" x2="170" y2="180" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead4)" />
+                      <line x1="470" y1="100" x2="470" y2="180" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead4)" />
+
+                      {/* Tier 5 - Database */}
+                      <rect x="80" y="340" width="180" height="80" rx="6" fill="url(#techGrad)" filter="url(#shadow4)" opacity="0.85" />
+                      <text x="170" y="365" textAnchor="middle" fill="white" fontSize="13" fontWeight="700">Supabase</text>
+                      <text x="170" y="385" textAnchor="middle" fill="white" fontSize="11">PostgreSQL</text>
+                      <text x="170" y="402" textAnchor="middle" fill="white" fontSize="11">+ pgvector + Auth</text>
+
+                      {/* Tier 6 - LLM */}
+                      <rect x="380" y="340" width="180" height="80" rx="6" fill="url(#techGrad)" filter="url(#shadow4)" opacity="0.85" />
+                      <text x="470" y="365" textAnchor="middle" fill="white" fontSize="13" fontWeight="700">LLM Providers</text>
+                      <text x="470" y="385" textAnchor="middle" fill="white" fontSize="11">Claude/GPT/Groq</text>
+                      <text x="470" y="402" textAnchor="middle" fill="white" fontSize="11">Multi-Model</text>
+
+                      {/* Arrows from API tiers down to resources */}
+                      <line x1="170" y1="260" x2="170" y2="340" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead4)" />
+                      <line x1="470" y1="260" x2="470" y2="340" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowhead4)" />
+                    </svg>
+                  )
+                },
               ].map((d, i) => (
                 <div key={i} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all">
                   <div className={`bg-gradient-to-r ${d.color} p-5`}>
@@ -563,10 +818,8 @@ export default function ArchitecturePage() {
                     <h3 className="text-lg font-bold">{d.title}</h3>
                     <p className="text-xs opacity-80 mt-1">{d.phase} — {d.desc}</p>
                   </div>
-                  <div className="p-5">
-                    <pre className="text-[11px] text-slate-300 leading-relaxed font-mono bg-black/20 rounded-lg p-4 overflow-x-auto whitespace-pre">
-                      {d.diagram}
-                    </pre>
+                  <div className="p-5 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
+                    {d.diagram}
                   </div>
                 </div>
               ))}

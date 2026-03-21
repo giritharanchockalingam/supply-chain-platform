@@ -46,6 +46,22 @@ const planningNavItems = [
   { label: 'Reports', href: '/planning/reports', icon: FileText },
 ];
 
+const pageBanners: Record<string, { title: string; subtitle: string; gradient: string }> = {
+  '/yard/dashboard': { title: 'Yard Dashboard', subtitle: 'Real-time KPIs, priority queue, and dock status overview', gradient: 'from-blue-600 via-blue-700 to-indigo-700' },
+  '/yard/map': { title: 'Interactive Yard Map', subtitle: 'Live truck positioning and dock utilization', gradient: 'from-blue-600 to-blue-700' },
+  '/yard/check-in': { title: 'Gate Check-In', subtitle: 'Truck arrival processing and BOL verification', gradient: 'from-sky-600 to-blue-700' },
+  '/yard/docks': { title: 'Dock Schedule', subtitle: 'Dock assignments, availability, and scheduling', gradient: 'from-indigo-600 to-blue-700' },
+  '/yard/exceptions': { title: 'Exception Management', subtitle: 'Track and resolve yard operation exceptions', gradient: 'from-red-600 to-rose-700' },
+  '/yard/reports': { title: 'Yard Reports', subtitle: 'Analytics, trends, and operational performance', gradient: 'from-violet-600 to-indigo-700' },
+  '/planning/dashboard': { title: 'Demand Planning Dashboard', subtitle: 'Forecast accuracy, inventory signals, and replenishment', gradient: 'from-emerald-600 to-teal-700' },
+  '/planning/intake': { title: 'Data Intake', subtitle: 'Ingestion jobs, data quality, and pipeline monitoring', gradient: 'from-teal-600 to-cyan-700' },
+  '/planning/forecasts': { title: 'Forecast Engine', subtitle: 'ML-powered demand forecasts and accuracy tracking', gradient: 'from-cyan-600 to-blue-700' },
+  '/planning/replenishment': { title: 'Replenishment', subtitle: 'Automated reorder recommendations and stock optimization', gradient: 'from-green-600 to-emerald-700' },
+  '/planning/workbench': { title: 'Planner Workbench', subtitle: 'Collaborative planning tools and scenario analysis', gradient: 'from-lime-600 to-green-700' },
+  '/planning/reports': { title: 'Planning Reports', subtitle: 'Forecast performance, inventory health, and KPIs', gradient: 'from-amber-600 to-orange-700' },
+  '/ai': { title: 'AI Command Center', subtitle: 'Multi-LLM orchestration with MCP tools', gradient: 'from-purple-600 to-violet-700' },
+};
+
 export function RootLayoutClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const pathname = usePathname();
@@ -53,6 +69,9 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
   const isActive = (href: string) => {
     return pathname.startsWith(href.split('/').slice(0, 3).join('/'));
   };
+
+  const banner = pageBanners[pathname];
+  const isArchitecturePage = pathname.startsWith('/architecture');
 
   return (
     <>
@@ -214,8 +233,22 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
+        {/* Page Banner */}
+        {banner && !isArchitecturePage && (
+          <div className={`bg-gradient-to-r ${banner.gradient} px-8 py-5`}>
+            <h1 className="text-xl font-bold text-white">{banner.title}</h1>
+            <p className="text-sm text-white/70 mt-0.5">{banner.subtitle}</p>
+          </div>
+        )}
+
         {/* Page Content */}
         <main className="flex-1 overflow-auto">{children}</main>
+
+        {/* Copyright Footer */}
+        <footer className="bg-slate-50 border-t border-gray-200 px-6 py-3 flex items-center justify-between text-xs text-gray-500">
+          <span>&copy; {new Date().getFullYear()} Giritharan Chockalingam. All rights reserved.</span>
+          <span className="text-gray-400">Supply Chain Command Center v1.0</span>
+        </footer>
       </div>
 
       {/* AI Command Center - Available on all pages */}

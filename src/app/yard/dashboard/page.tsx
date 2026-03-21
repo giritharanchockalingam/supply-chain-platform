@@ -19,17 +19,6 @@ export default function YardDashboard() {
   const [sortField, setSortField] = useState<'priority' | 'dwell' | 'arrival'>('priority');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  if (loading || !metrics) {
-    return (
-      <div className="p-8 flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading yard data...</p>
-        </div>
-      </div>
-    );
-  }
-
   const sortedTrucks = useMemo(() => {
     let result = [...trucks];
 
@@ -50,6 +39,17 @@ export default function YardDashboard() {
 
     return result;
   }, [sortField, filterStatus, trucks]);
+
+  if (loading || !metrics) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading yard data...</p>
+        </div>
+      </div>
+    );
+  }
 
   const openExceptions = exceptions.filter((e: typeof exceptions[number]) => !e.resolvedAt);
   const statusColors: Record<string, string> = {

@@ -6,6 +6,29 @@ import { Truck, Dock } from '@/lib/types';
 import { TruckDetailPanel } from '@/components/yard/TruckDetailPanel';
 import { RefreshCw } from 'lucide-react';
 
+// SVG Truck Icon Component
+function TruckIcon({ color, isPulsing }: { color: string; isPulsing: boolean }) {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      className={`drop-shadow-md ${isPulsing ? 'animate-pulse' : ''}`}
+    >
+      {/* Truck Body */}
+      <rect x="2" y="14" width="18" height="10" rx="2" fill={color} stroke="white" strokeWidth="1.5" />
+      {/* Truck Cab */}
+      <rect x="16" y="8" width="8" height="10" rx="1" fill={color} stroke="white" strokeWidth="1.5" />
+      {/* Wheel 1 */}
+      <circle cx="8" cy="26" r="3" fill="#374151" stroke="white" strokeWidth="1" />
+      {/* Wheel 2 */}
+      <circle cx="20" cy="26" r="3" fill="#374151" stroke="white" strokeWidth="1" />
+      {/* Window */}
+      <rect x="17" y="10" width="5" height="4" rx="1" fill="#e0f2fe" opacity="0.7" />
+    </svg>
+  );
+}
+
 const statusColors: Record<string, string> = {
   approaching: '#3b82f6',
   at_gate: '#8b5cf6',
@@ -26,12 +49,35 @@ const dockStatusColors: Record<string, string> = {
   blocked: '#9ca3af',
 };
 
+const dockGradients: Record<string, string> = {
+  available: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+  assigned: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
+  occupied: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+  maintenance: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+  blocked: 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)',
+};
+
 export default function YardMap() {
   const { data: trucks, loading: trucksLoading } = useTrucks(25);
   const { data: docks, loading: docksLoading } = useDocks(20);
   const loading = trucksLoading || docksLoading;
   const [selectedTruck, setSelectedTruck] = useState<Truck | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
+
+  // Calculate stats
+  const totalTrucks = trucks.length;
+  const avgDwellTime =
+    trucks.length > 0
+      ? Math.round(trucks.reduce((sum, t) => sum + t.dwellTime, 0) / trucks.length)
+      : 0;
+  const dockUtilization =
+    docks.length > 0
+      ? Math.round(
+          (docks.filter((d: Dock) => d.status === 'occupied' || d.status === 'assigned').length /
+            docks.length) *
+            100
+        )
+      : 0;
 
   // Sort trucks by status priority for legend
   const sortedStatuses = Object.keys(statusColors).sort((a, b) => {
@@ -76,34 +122,75 @@ export default function YardMap() {
           </div>
         </div>
 
+        {/* Stats Bar */}
+        <div className="bg-white rounded-lg shadow p-4 mb-6">
+          <div className="flex justify-between items-center">
+            <div className="flex gap-8">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{totalTrucks}</div>
+                <div className="text-xs text-gray-600 mt-1">Total Trucks</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-600">{avgDwellTime}m</div>
+                <div className="text-xs text-gray-600 mt-1">Avg Dwell Time</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-600">{dockUtilization}%</div>
+                <div className="text-xs text-gray-600 mt-1">Dock Utilization</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Yard Map */}
         <div className="flex gap-6 p-8 bg-gradient-to-br from-slate-50 to-slate-100 min-h-[600px]">
           {/* Main Map Area */}
-          <div className="flex-1 relative bg-white rounded-lg shadow-lg border-2 border-gray-300 min-h-[600px]">
+          <div
+            className="flex-1 relative bg-white rounded-lg shadow-lg border-2 border-gray-300 min-h-[600px] overflow-hidden"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(226, 232, 240, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(226, 232, 240, 0.4) 1px, transparent 1px)
+              `,
+              backgroundSize: '40px 40px',
+            }}
+          >
             {/* Zone Background Shading */}
             <div className="absolute inset-0 flex">
               {/* Gate Zone - 15% */}
               <div className="h-full bg-red-50 border-r border-dashed border-red-200" style={{ width: '15%' }}>
-                <div className="text-center pt-2">
-                  <span className="text-xs font-bold text-red-400 uppercase tracking-wider">Gates</span>
+                <div className="text-center pt-4">
+                  <div className="inline-block">
+                    <span className="text-sm font-bold text-red-700 uppercase tracking-wider block">Gates</span>
+                    <div className="h-1 bg-red-500 mt-2 rounded-full" style={{ width: '50px' }}></div>
+                  </div>
                 </div>
               </div>
               {/* Staging Zone - 20% */}
               <div className="h-full bg-amber-50 border-r border-dashed border-amber-200" style={{ width: '20%' }}>
-                <div className="text-center pt-2">
-                  <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Staging</span>
+                <div className="text-center pt-4">
+                  <div className="inline-block">
+                    <span className="text-sm font-bold text-amber-700 uppercase tracking-wider block">Staging</span>
+                    <div className="h-1 bg-amber-500 mt-2 rounded-full" style={{ width: '50px' }}></div>
+                  </div>
                 </div>
               </div>
               {/* Yard Zone - 30% */}
               <div className="h-full bg-blue-50 border-r border-dashed border-blue-200" style={{ width: '30%' }}>
-                <div className="text-center pt-2">
-                  <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">Yard</span>
+                <div className="text-center pt-4">
+                  <div className="inline-block">
+                    <span className="text-sm font-bold text-blue-700 uppercase tracking-wider block">Yard</span>
+                    <div className="h-1 bg-blue-500 mt-2 rounded-full" style={{ width: '40px' }}></div>
+                  </div>
                 </div>
               </div>
               {/* Dock Zone - 35% */}
               <div className="h-full bg-emerald-50" style={{ width: '35%' }}>
-                <div className="text-center pt-2">
-                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Docks</span>
+                <div className="text-center pt-4">
+                  <div className="inline-block">
+                    <span className="text-sm font-bold text-emerald-700 uppercase tracking-wider block">Docks</span>
+                    <div className="h-1 bg-emerald-500 mt-2 rounded-full" style={{ width: '50px' }}></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -121,20 +208,23 @@ export default function YardMap() {
 
             {/* Docks (Right Side) - 2 columns of 5 */}
             <div className="absolute right-2 top-6 bottom-6 z-10" style={{ width: '120px' }}>
-              <div className="grid grid-cols-2 gap-2 h-full auto-rows-fr">
+              <div className="grid grid-cols-2 gap-3 h-full auto-rows-fr">
                 {docks.slice(0, 10).map((dock: Dock) => (
                   <div
                     key={dock.id}
-                    className="rounded border-2 cursor-pointer hover:shadow-lg transition-shadow flex items-center justify-center text-white text-xs font-bold"
+                    className="rounded-lg border-2 border-opacity-60 cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center justify-center text-white text-xs font-bold overflow-hidden relative group"
                     style={{
-                      backgroundColor: dockStatusColors[dock.status],
+                      background: dockGradients[dock.status],
                       borderColor: dockStatusColors[dock.status],
+                      boxShadow: `0 4px 12px -2px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)`,
                     }}
                     title={`${dock.name} - ${dock.status}`}
                   >
-                    <div className="text-center leading-tight">
-                      <div className="text-xs">{dock.name}</div>
-                      <div className="text-[10px] opacity-80">{dock.utilizationToday}%</div>
+                    {/* 3D Depth Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-black/5 pointer-events-none" />
+                    <div className="text-center leading-tight relative z-10">
+                      <div className="text-xs font-semibold">{dock.name}</div>
+                      <div className="text-[10px] opacity-90 mt-0.5">{dock.utilizationToday}%</div>
                     </div>
                   </div>
                 ))}
@@ -146,6 +236,7 @@ export default function YardMap() {
               {trucks.map((truck: Truck) => {
                 const xPercent = Math.min(95, Math.max(5, (truck.location.x / 1000) * 100));
                 const yPercent = Math.min(92, Math.max(8, (truck.location.y / 800) * 100));
+                const isPriority = truck.dwellTime > 300;
                 return (
                   <div
                     key={truck.id}
@@ -157,20 +248,34 @@ export default function YardMap() {
                     }}
                     onClick={() => setSelectedTruck(truck)}
                   >
-                    {/* Truck Icon */}
+                    {/* Priority Pulse Ring */}
+                    {isPriority && (
+                      <div
+                        className="absolute inset-0 rounded-full border-2 animate-pulse"
+                        style={{
+                          borderColor: statusColors[truck.status],
+                          width: '48px',
+                          height: '48px',
+                          left: '-8px',
+                          top: '-8px',
+                        }}
+                      />
+                    )}
+                    {/* Truck SVG Icon */}
                     <div
-                      className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold shadow-md hover:shadow-xl hover:scale-110 transition-all"
-                      style={{ backgroundColor: statusColors[truck.status] }}
+                      className="w-8 h-8 hover:scale-125 transition-transform"
                       title={truck.licensePlate}
                     >
-                      T
+                      <TruckIcon color={statusColors[truck.status]} isPulsing={isPriority} />
                     </div>
-                    {/* Hover Label */}
-                    <div className="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                      <div className="bg-gray-900 text-white text-xs px-2 py-1 rounded shadow-lg">
-                        <div className="font-bold">{truck.licensePlate}</div>
-                        <div className="text-gray-300">{truck.carrierName}</div>
-                        <div className="text-yellow-300">Dwell: {truck.dwellTime}m</div>
+                    {/* Hover Label with Shadow */}
+                    <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
+                      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-2xl border border-gray-700">
+                        <div className="font-bold text-white">{truck.licensePlate}</div>
+                        <div className="text-gray-300 text-[11px]">{truck.carrierName}</div>
+                        <div className={`text-[11px] mt-1 ${truck.dwellTime > 300 ? 'text-red-400 font-semibold' : 'text-yellow-300'}`}>
+                          Dwell: {truck.dwellTime}m
+                        </div>
                       </div>
                     </div>
                   </div>
