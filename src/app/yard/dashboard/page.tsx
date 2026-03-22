@@ -42,7 +42,7 @@ export default function YardDashboard() {
 
   if (loading || !metrics) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-[400px]">
+      <div className="p-4 lg:p-8 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading yard data...</p>
@@ -60,11 +60,11 @@ export default function YardDashboard() {
   };
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 lg:p-8 space-y-6 lg:space-y-8">
       {/* KPI Cards */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Key Performance Indicators</h2>
-        <div className="grid md:grid-cols-4 lg:grid-cols-7 gap-4">
+        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4">Key Performance Indicators</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           <MetricCard
             label="Trucks in Yard"
             value={metrics.totalTrucksInYard}
@@ -119,7 +119,7 @@ export default function YardDashboard() {
       {/* Priority Queue */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">Priority Queue</h2>
+          <h2 className="text-xl lg:text-2xl font-bold text-gray-900">Priority Queue</h2>
           <div className="flex gap-2">
             <select
               value={sortField}
@@ -144,7 +144,7 @@ export default function YardDashboard() {
         </div>
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto mobile-table-wrapper">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
@@ -208,7 +208,7 @@ export default function YardDashboard() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-4 lg:gap-8">
         {/* Throughput Chart */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Throughput - Last 24 Hours</h3>
@@ -242,7 +242,7 @@ export default function YardDashboard() {
 
       {/* Dock Status Grid */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Dock Status Overview</h2>
+        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4">Dock Status Overview</h2>
         <div className="grid md:grid-cols-4 lg:grid-cols-5 gap-4">
           {docks.slice(0, 15).map((dock) => {
             const currentTruck = dock.currentTruckId ? trucks.find((t: Truck) => t.id === dock.currentTruckId) : null;
@@ -263,7 +263,7 @@ export default function YardDashboard() {
       {/* Exceptions Panel */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">Active Exceptions ({openExceptions.length})</h2>
+          <h2 className="text-xl lg:text-2xl font-bold text-gray-900">Active Exceptions ({openExceptions.length})</h2>
         </div>
         <div className="space-y-3">
           {openExceptions.slice(0, 8).map((exception: typeof openExceptions[number]) => (
