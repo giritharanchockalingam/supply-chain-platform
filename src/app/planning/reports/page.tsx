@@ -139,7 +139,7 @@ export default function PlanningReportsPage() {
               </button>
 
               <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">
+                <h2 className="text-xl lg:text-2xl font-bold text-slate-900 mb-6">
                   {reports.find(r => r.id === selectedReport)?.title}
                 </h2>
 
@@ -219,22 +219,22 @@ export default function PlanningReportsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                       <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                         <p className="text-xs text-slate-600 mb-1">Overall MAPE</p>
-                        <p className="text-2xl font-bold text-slate-900">11.3%</p>
+                        <p className="text-xl lg:text-2xl font-bold text-slate-900">11.3%</p>
                         <p className="text-xs text-emerald-600 mt-1">↓ 2.1% vs last month</p>
                       </div>
                       <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                         <p className="text-xs text-slate-600 mb-1">Best Method</p>
-                        <p className="text-2xl font-bold text-slate-900">Holt-W</p>
+                        <p className="text-xl lg:text-2xl font-bold text-slate-900">Holt-W</p>
                         <p className="text-xs text-slate-600 mt-1">8.7% MAPE</p>
                       </div>
                       <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                         <p className="text-xs text-slate-600 mb-1">Worst Method</p>
-                        <p className="text-2xl font-bold text-slate-900">ARIMA</p>
+                        <p className="text-xl lg:text-2xl font-bold text-slate-900">ARIMA</p>
                         <p className="text-xs text-slate-600 mt-1">14.2% MAPE</p>
                       </div>
                       <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                         <p className="text-xs text-slate-600 mb-1">Forecast Count</p>
-                        <p className="text-2xl font-bold text-slate-900">847</p>
+                        <p className="text-xl lg:text-2xl font-bold text-slate-900">847</p>
                         <p className="text-xs text-slate-600 mt-1">Active SKUs</p>
                       </div>
                     </div>
@@ -282,22 +282,22 @@ export default function PlanningReportsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                       <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
                         <p className="text-xs text-emerald-600 mb-1">Service Level</p>
-                        <p className="text-2xl font-bold text-emerald-900">94.2%</p>
+                        <p className="text-xl lg:text-2xl font-bold text-emerald-900">94.2%</p>
                         <p className="text-xs text-emerald-600 mt-1">↑ 2.3% vs target</p>
                       </div>
                       <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                         <p className="text-xs text-blue-600 mb-1">Fill Rate</p>
-                        <p className="text-2xl font-bold text-blue-900">92.8%</p>
+                        <p className="text-xl lg:text-2xl font-bold text-blue-900">92.8%</p>
                         <p className="text-xs text-blue-600 mt-1">Orders fulfilled</p>
                       </div>
                       <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
                         <p className="text-xs text-amber-600 mb-1">Stockout Events</p>
-                        <p className="text-2xl font-bold text-amber-900">14</p>
+                        <p className="text-xl lg:text-2xl font-bold text-amber-900">14</p>
                         <p className="text-xs text-amber-600 mt-1">Last 30 days</p>
                       </div>
                       <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                         <p className="text-xs text-slate-600 mb-1">Demand Met</p>
-                        <p className="text-2xl font-bold text-slate-900">98.1%</p>
+                        <p className="text-xl lg:text-2xl font-bold text-slate-900">98.1%</p>
                         <p className="text-xs text-slate-600 mt-1">Total demand</p>
                       </div>
                     </div>
@@ -337,7 +337,7 @@ export default function PlanningReportsPage() {
               {/* Data Table Sample */}
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-slate-900 mb-4">Report Data</h3>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto mobile-table-wrapper">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-slate-200">
