@@ -89,25 +89,25 @@ function TruckMarker({
             <div className="text-gray-400 text-[10px]">{truck.trailerNumber}</div>
           </div>
           <div className="px-3 py-2 space-y-1.5">
-            <div className="flex justify-between gap-6">
+            <div className="flex justify-between gap-3 lg:gap-6">
               <span className="text-gray-400">Carrier</span>
               <span className="font-medium">{truck.carrierName}</span>
             </div>
-            <div className="flex justify-between gap-6">
+            <div className="flex justify-between gap-3 lg:gap-6">
               <span className="text-gray-400">Status</span>
               <span className="capitalize" style={{ color }}>{truck.status.replace('_', ' ')}</span>
             </div>
-            <div className="flex justify-between gap-6">
+            <div className="flex justify-between gap-3 lg:gap-6">
               <span className="text-gray-400">Dwell</span>
               <span className={truck.dwellTime > 300 ? 'text-red-400 font-bold' : truck.dwellTime > 180 ? 'text-amber-400' : 'text-green-400'}>
                 {Math.floor(truck.dwellTime / 60)}h {truck.dwellTime % 60}m
               </span>
             </div>
-            <div className="flex justify-between gap-6">
+            <div className="flex justify-between gap-3 lg:gap-6">
               <span className="text-gray-400">Dock</span>
               <span className="text-blue-400">{truck.assignedDock || 'Unassigned'}</span>
             </div>
-            <div className="flex justify-between gap-6">
+            <div className="flex justify-between gap-3 lg:gap-6">
               <span className="text-gray-400">Priority</span>
               <span className={
                 truck.priorityLevel === 'critical' ? 'text-red-400' :
@@ -116,7 +116,7 @@ function TruckMarker({
               }>{truck.priorityScore} ({truck.priorityLevel})</span>
             </div>
             {truck.temperatureClass !== 'ambient' && (
-              <div className="flex justify-between gap-6">
+              <div className="flex justify-between gap-3 lg:gap-6">
                 <span className="text-gray-400">Temp</span>
                 <span className="capitalize text-cyan-400">{truck.temperatureClass}</span>
               </div>
@@ -252,7 +252,7 @@ export default function YardMap() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-[400px]">
+      <div className="p-4 lg:p-8 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading yard map...</p>
@@ -416,7 +416,7 @@ export default function YardMap() {
 
           {/* Docks */}
           <div className="absolute right-2 top-8 bottom-8 z-10" style={{ width: '130px' }}>
-            <div className="grid grid-cols-2 gap-2 h-full auto-rows-fr">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full auto-rows-fr">
               {docks.slice(0, 10).map((dock: Dock) => {
                 const assignedTruck = dock.currentTruckId
                   ? trucks.find(t => t.id === dock.currentTruckId)
@@ -539,7 +539,7 @@ export default function YardMap() {
             <div className="space-y-3">
               <div>
                 <h4 className="text-[10px] font-semibold text-gray-500 uppercase mb-2">Trucks</h4>
-                <div className="grid grid-cols-2 gap-1.5">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-1.5">
                   {Object.entries(statusLabels).map(([status, label]) => {
                     const count = statusCounts[status] || 0;
                     return (
