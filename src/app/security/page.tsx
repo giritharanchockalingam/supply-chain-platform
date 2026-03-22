@@ -45,7 +45,7 @@ export default function SecurityPage() {
   }, []);
 
   if (loading) {
-    return (<div className="p-8 flex items-center justify-center min-h-[400px]"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4" /><p className="text-gray-600">Loading security data...</p></div></div>);
+    return (<div className="p-4 lg:p-8 flex items-center justify-center min-h-[400px]"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4" /><p className="text-gray-600">Loading security data...</p></div></div>);
   }
 
   const intactSeals = seals.filter(s => s.status === 'intact').length;
@@ -88,7 +88,7 @@ export default function SecurityPage() {
               { label: 'Anomalies', value: anomalyEvents, color: 'text-red-600', bg: 'bg-red-50' },
             ].map((kpi, i) => (
               <div key={i} className={`${kpi.bg} rounded-xl p-4 border border-gray-100`}>
-                <div className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</div>
+                <div className={`text-xl lg:text-2xl font-bold ${kpi.color}`}>{kpi.value}</div>
                 <div className="text-[11px] text-gray-500 font-medium mt-1">{kpi.label}</div>
               </div>
             ))}
