@@ -57,7 +57,7 @@ export default function ExceptionsPage() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-[400px]">
+      <div className="p-4 lg:p-8 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading exceptions...</p>
@@ -92,8 +92,8 @@ export default function ExceptionsPage() {
   };
 
   return (
-    <div className="p-8">
-      <div className="space-y-8">
+    <div className="p-4 lg:p-8">
+      <div className="space-y-6 lg:space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Exception Management</h1>
@@ -101,7 +101,7 @@ export default function ExceptionsPage() {
         </div>
 
         {/* Statistics */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-3 lg:gap-6">
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-600 font-medium">Total Exceptions</p>
             <p className="text-4xl font-bold text-gray-900 mt-2">{stats.total}</p>
@@ -181,7 +181,7 @@ export default function ExceptionsPage() {
 
         {/* Exception Queue */}
         <div className="space-y-3">
-          <h2 className="text-2xl font-bold text-gray-900">Exception Queue ({filteredExceptions.length})</h2>
+          <h2 className="text-xl lg:text-2xl font-bold text-gray-900">Exception Queue ({filteredExceptions.length})</h2>
 
           {filteredExceptions.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-12 text-center">
