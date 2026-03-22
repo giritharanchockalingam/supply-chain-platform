@@ -5,29 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/lib/auth';
+import { useTheme } from '@/lib/theme';
 import {
-  Menu,
-  X,
-  Truck,
-  Map,
-  ClipboardCheck,
-  LayoutGrid,
-  AlertTriangle,
-  BarChart3,
-  TrendingUp,
-  Database,
-  LineChart,
-  Package,
-  Wrench,
-  FileText,
-  Bell,
-  Search,
-  Settings,
-  Brain,
-  Layers,
-  Shield,
-  ScanLine,
-  LogOut,
+  Menu, X, Truck, Map, ClipboardCheck, LayoutGrid, AlertTriangle, BarChart3,
+  TrendingUp, Database, LineChart, Package, Wrench, FileText, Bell, Search,
+  Settings, Brain, Layers, Shield, ScanLine, LogOut, Sun, Moon,
 } from 'lucide-react';
 
 const AICommandCenter = dynamic(() => import('@/components/ai/AICommandCenter'), { ssr: false });
@@ -72,6 +54,7 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const pathname = usePathname();
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const isActive = (href: string) => {
     return pathname.startsWith(href.split('/').slice(0, 3).join('/'));
@@ -82,49 +65,29 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* Sidebar */}
+      {/* Sidebar — always dark for contrast */}
       <div
         className={`bg-slate-900 text-white transition-all duration-300 ${
           sidebarOpen ? 'w-64' : 'w-20'
         } flex-shrink-0 flex flex-col border-r border-slate-700`}
       >
-        {/* Header */}
         <div className="flex items-center justify-between h-20 px-4 border-b border-slate-700">
-          {sidebarOpen && (
-            <h1 className="text-lg font-bold truncate">Supply Chain</h1>
-          )}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
-          >
+          {sidebarOpen && <h1 className="text-lg font-bold truncate">Supply Chain</h1>}
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-slate-800 rounded-lg transition-colors">
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-3 py-6 space-y-8 overflow-y-auto">
           {/* Yard Management */}
           <div>
-            {sidebarOpen && (
-              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                Yard Management
-              </h2>
-            )}
+            {sidebarOpen && <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Yard Management</h2>}
             <div className="space-y-2">
               {yardNavItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      active
-                        ? 'bg-blue-600 text-white'
-                        : 'text-slate-300 hover:bg-slate-800'
-                    }`}
-                    title={item.label}
-                  >
+                  <Link key={item.href} href={item.href} className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${active ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`} title={item.label}>
                     <Icon size={20} className="flex-shrink-0" />
                     {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
                   </Link>
@@ -135,26 +98,13 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
 
           {/* Demand Planning */}
           <div>
-            {sidebarOpen && (
-              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                Demand Planning
-              </h2>
-            )}
+            {sidebarOpen && <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Demand Planning</h2>}
             <div className="space-y-2">
               {planningNavItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      active
-                        ? 'bg-blue-600 text-white'
-                        : 'text-slate-300 hover:bg-slate-800'
-                    }`}
-                    title={item.label}
-                  >
+                  <Link key={item.href} href={item.href} className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${active ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`} title={item.label}>
                     <Icon size={20} className="flex-shrink-0" />
                     {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
                   </Link>
@@ -163,46 +113,22 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* AI Command Center */}
+          {/* AI */}
           <div>
-            {sidebarOpen && (
-              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                AI Intelligence
-              </h2>
-            )}
+            {sidebarOpen && <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">AI Intelligence</h2>}
             <div className="space-y-2">
-              <Link
-                href="/ai"
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname.startsWith('/ai')
-                    ? 'bg-purple-600 text-white'
-                    : 'text-slate-300 hover:bg-slate-800'
-                }`}
-                title="AI Command Center"
-              >
+              <Link href="/ai" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith('/ai') ? 'bg-purple-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`} title="AI Command Center">
                 <Brain size={20} className="flex-shrink-0" />
                 {sidebarOpen && <span className="text-sm font-medium">AI Command Center</span>}
               </Link>
             </div>
           </div>
 
-          {/* Trailer Security */}
+          {/* Security */}
           <div>
-            {sidebarOpen && (
-              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                Security
-              </h2>
-            )}
+            {sidebarOpen && <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Security</h2>}
             <div className="space-y-2">
-              <Link
-                href="/security"
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname.startsWith('/security')
-                    ? 'bg-red-600 text-white'
-                    : 'text-slate-300 hover:bg-slate-800'
-                }`}
-                title="Trailer Security"
-              >
+              <Link href="/security" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith('/security') ? 'bg-red-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`} title="Trailer Security">
                 <Shield size={20} className="flex-shrink-0" />
                 {sidebarOpen && <span className="text-sm font-medium">Trailer Security</span>}
               </Link>
@@ -211,21 +137,9 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
 
           {/* Data Capture */}
           <div>
-            {sidebarOpen && (
-              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                Data Capture
-              </h2>
-            )}
+            {sidebarOpen && <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Data Capture</h2>}
             <div className="space-y-2">
-              <Link
-                href="/data-capture"
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname.startsWith('/data-capture')
-                    ? 'bg-cyan-600 text-white'
-                    : 'text-slate-300 hover:bg-slate-800'
-                }`}
-                title="Data Capture & Pipeline"
-              >
+              <Link href="/data-capture" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith('/data-capture') ? 'bg-cyan-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`} title="Data Capture & Pipeline">
                 <ScanLine size={20} className="flex-shrink-0" />
                 {sidebarOpen && <span className="text-sm font-medium">Data Pipeline</span>}
               </Link>
@@ -234,21 +148,9 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
 
           {/* Architecture */}
           <div>
-            {sidebarOpen && (
-              <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                Architecture
-              </h2>
-            )}
+            {sidebarOpen && <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Architecture</h2>}
             <div className="space-y-2">
-              <Link
-                href="/architecture"
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  pathname.startsWith('/architecture')
-                    ? 'bg-emerald-600 text-white'
-                    : 'text-slate-300 hover:bg-slate-800'
-                }`}
-                title="TOGAF Architecture"
-              >
+              <Link href="/architecture" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith('/architecture') ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`} title="TOGAF Architecture">
                 <Layers size={20} className="flex-shrink-0" />
                 {sidebarOpen && <span className="text-sm font-medium">TOGAF Enterprise</span>}
               </Link>
@@ -258,34 +160,43 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col bg-slate-50 dark:bg-gray-950 transition-colors">
         {/* Top Header */}
-        <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6">
+        <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 h-16 flex items-center justify-between px-6 transition-colors">
           <div className="flex-1 max-w-md">
             <div className="relative">
-              <Search size={18} className="absolute left-3 top-3 text-gray-400" />
+              <Search size={18} className="absolute left-3 top-3 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-4 ml-4">
+          <div className="flex items-center gap-3 ml-4">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? (
+                <Moon size={20} className="text-gray-500" />
+              ) : (
+                <Sun size={20} className="text-amber-400" />
+              )}
+            </button>
+
             <div className="relative">
-              <button className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <Bell size={20} className="text-gray-700" />
+              <button className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                <Bell size={20} className="text-gray-700 dark:text-gray-300" />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
             </div>
 
-            <button
-              onClick={() => signOut()}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Sign out"
-            >
-              <LogOut size={20} className="text-gray-500" />
+            <button onClick={() => signOut()} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" title="Sign out">
+              <LogOut size={20} className="text-gray-500 dark:text-gray-400" />
             </button>
 
             <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm cursor-pointer hover:bg-blue-700" title={user?.email || ''}>
@@ -303,16 +214,16 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-auto dark:text-gray-100 transition-colors">{children}</main>
 
         {/* Copyright Footer */}
-        <footer className="bg-slate-50 border-t border-gray-200 px-6 py-3 flex items-center justify-between text-xs text-gray-500">
+        <footer className="bg-slate-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 transition-colors">
           <span>&copy; {new Date().getFullYear()} Giritharan Chockalingam. All rights reserved.</span>
-          <span className="text-gray-400">Supply Chain Command Center v1.0</span>
+          <span className="text-gray-400 dark:text-gray-500">Supply Chain Command Center v1.0</span>
         </footer>
       </div>
 
-      {/* AI Command Center - Available on all pages */}
+      {/* AI Command Center */}
       <AICommandCenter currentPage={pathname.replace(/^\//, '')} />
     </>
   );
