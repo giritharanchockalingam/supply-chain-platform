@@ -216,13 +216,13 @@ export default function AIPage() {
               <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mb-6">
                 <Sparkles size={36} className="text-blue-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Supply Chain AI Assistant</h2>
+              <h2 className="text-xl lg:text-2xl font-bold text-gray-800 mb-2">Supply Chain AI Assistant</h2>
               <p className="text-gray-500 mb-8 max-w-lg">
                 Ask me anything about your supply chain. I query real-time data through 40+ MCP tools across yard operations and demand planning, grounded by RAG knowledge search.
               </p>
 
               {/* Architecture Cards */}
-              <div className="grid grid-cols-3 gap-4 mb-8 w-full max-w-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 w-full max-w-xl">
                 <div className="bg-white rounded-xl border border-gray-100 p-4 text-left shadow-sm">
                   <Server size={20} className="text-blue-600 mb-2" />
                   <h3 className="text-sm font-bold text-gray-800">MCP Servers</h3>
@@ -243,7 +243,7 @@ export default function AIPage() {
               {/* Quick Actions */}
               <div className="w-full max-w-xl">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Actions</p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                   {quickActions.map((action, i) => (
                     <button
                       key={i}
