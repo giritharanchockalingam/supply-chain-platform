@@ -184,7 +184,7 @@ export default function PlannerWorkbenchPage() {
                 <span className="text-sm font-medium text-emerald-900">Queue Health</span>
                 <CheckCircle2 className="text-emerald-600" size={20} />
               </div>
-              <p className="text-2xl font-bold text-emerald-600">{myQueue.length}</p>
+              <p className="text-xl lg:text-2xl font-bold text-emerald-600">{myQueue.length}</p>
               <p className="text-xs text-emerald-700">Active exceptions</p>
             </div>
 
@@ -193,7 +193,7 @@ export default function PlannerWorkbenchPage() {
                 <span className="text-sm font-medium text-blue-900">Pending Approvals</span>
                 <Clock className="text-blue-600" size={20} />
               </div>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-xl lg:text-2xl font-bold text-blue-600">
                 {replenishments.filter(r => r.status === 'pending').length}
               </p>
               <p className="text-xs text-blue-700">replenishment items</p>
@@ -204,7 +204,7 @@ export default function PlannerWorkbenchPage() {
                 <span className="text-sm font-medium text-amber-900">Overdue Tasks</span>
                 <AlertTriangle className="text-amber-600" size={20} />
               </div>
-              <p className="text-2xl font-bold text-amber-600">{stats.overdue}</p>
+              <p className="text-xl lg:text-2xl font-bold text-amber-600">{stats.overdue}</p>
               <p className="text-xs text-amber-700">need attention</p>
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function PlannerWorkbenchPage() {
         </div>
 
         {/* Customer Spotlight & Calendar */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6">
           {/* Customer Spotlight */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-lg shadow p-6">
@@ -273,22 +273,22 @@ export default function PlannerWorkbenchPage() {
 
               {selectedCustomer && customerMetrics && (
                 <>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                     <div className="bg-slate-50 rounded-lg p-3">
                       <p className="text-xs text-slate-600 mb-1">Data Quality</p>
-                      <p className="text-2xl font-bold text-slate-900">{customerMetrics.dataQualityScore}%</p>
+                      <p className="text-xl lg:text-2xl font-bold text-slate-900">{customerMetrics.dataQualityScore}%</p>
                     </div>
                     <div className="bg-slate-50 rounded-lg p-3">
                       <p className="text-xs text-slate-600 mb-1">Forecast Accuracy (MAPE)</p>
-                      <p className="text-2xl font-bold text-slate-900">{customerMetrics.avgMape.toFixed(1)}%</p>
+                      <p className="text-xl lg:text-2xl font-bold text-slate-900">{customerMetrics.avgMape.toFixed(1)}%</p>
                     </div>
                     <div className="bg-slate-50 rounded-lg p-3">
                       <p className="text-xs text-slate-600 mb-1">Recent Orders</p>
-                      <p className="text-2xl font-bold text-slate-900">{customerMetrics.recentOrders}</p>
+                      <p className="text-xl lg:text-2xl font-bold text-slate-900">{customerMetrics.recentOrders}</p>
                     </div>
                     <div className="bg-slate-50 rounded-lg p-3">
                       <p className="text-xs text-slate-600 mb-1">Active Exceptions</p>
-                      <p className="text-2xl font-bold text-slate-900">{customerMetrics.exceptionCount}</p>
+                      <p className="text-xl lg:text-2xl font-bold text-slate-900">{customerMetrics.exceptionCount}</p>
                     </div>
                   </div>
 
