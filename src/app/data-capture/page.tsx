@@ -107,7 +107,7 @@ export default function DataCapturePage() {
       {tab === 'scans' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3"><Filter size={16} className="text-gray-400" /><div className="flex gap-1.5">{['all', 'barcode', 'rfid', 'qr_code', 'manual'].map(t => (<button key={t} onClick={() => setScanFilter(t)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${scanFilter === t ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{t === 'all' ? `All (${scans.length})` : `${t.replace('_', ' ')} (${scans.filter(s => s.scan_type === t).length})`}</button>))}</div></div>
+            <div className="flex items-center gap-3"><Filter size={16} className="text-gray-400" /><div className="mobile-tabs flex gap-1.5">{['all', 'barcode', 'rfid', 'qr_code', 'manual'].map(t => (<button key={t} onClick={() => setScanFilter(t)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${scanFilter === t ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{t === 'all' ? `All (${scans.length})` : `${t.replace('_', ' ')} (${scans.filter(s => s.scan_type === t).length})`}</button>))}</div></div>
             <div className="flex gap-4 text-xs text-gray-500"><span>Valid: <strong className="text-emerald-600">{validScans}</strong></span><span>Invalid: <strong className="text-red-600">{scans.length - validScans}</strong></span></div>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
