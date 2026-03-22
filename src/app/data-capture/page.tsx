@@ -40,7 +40,7 @@ export default function DataCapturePage() {
     load();
   }, []);
 
-  if (loading) { return (<div className="p-8 flex items-center justify-center min-h-[400px]"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto mb-4" /><p className="text-gray-600">Loading pipeline data...</p></div></div>); }
+  if (loading) { return (<div className="p-4 lg:p-8 flex items-center justify-center min-h-[400px]"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto mb-4" /><p className="text-gray-600">Loading pipeline data...</p></div></div>); }
 
   const activeSources = sources.filter(s => s.is_active).length;
   const failedSources = sources.filter(s => s.last_sync_status === 'failed').length;
@@ -62,7 +62,7 @@ export default function DataCapturePage() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {[{ label: 'Active Sources', value: activeSources, color: 'text-blue-600', bg: 'bg-blue-50' }, { label: 'Total Ingested', value: formatNum(totalIngested), color: 'text-emerald-600', bg: 'bg-emerald-50' }, { label: 'Last Sync', value: timeAgo(lastSync), color: 'text-cyan-600', bg: 'bg-cyan-50' }, { label: 'Failed Sources', value: failedSources, color: 'text-red-600', bg: 'bg-red-50' }, { label: 'Avg Match Rate', value: `${avgMatchRate}%`, color: 'text-violet-600', bg: 'bg-violet-50' }, { label: 'Scan Valid %', value: scans.length > 0 ? `${Math.round((validScans / scans.length) * 100)}%` : '0%', color: 'text-amber-600', bg: 'bg-amber-50' }].map((kpi, i) => (
-              <div key={i} className={`${kpi.bg} rounded-xl p-4 border border-gray-100`}><div className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</div><div className="text-[11px] text-gray-500 font-medium mt-1">{kpi.label}</div></div>
+              <div key={i} className={`${kpi.bg} rounded-xl p-4 border border-gray-100`}><div className={`text-xl lg:text-2xl font-bold ${kpi.color}`}>{kpi.value}</div><div className="text-[11px] text-gray-500 font-medium mt-1">{kpi.label}</div></div>
             ))}
           </div>
           <div>
@@ -134,10 +134,10 @@ export default function DataCapturePage() {
 
       {tab === 'reconciliation' && (
         <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="bg-violet-50 rounded-xl p-4 border border-violet-100"><div className="text-2xl font-bold text-violet-600">{avgMatchRate}%</div><div className="text-[11px] text-gray-500 font-medium mt-1">Avg Match Rate</div></div>
-            <div className="bg-blue-50 rounded-xl p-4 border border-blue-100"><div className="text-2xl font-bold text-blue-600">{formatNum(recon.reduce((sum, r) => sum + r.matched_count, 0))}</div><div className="text-[11px] text-gray-500 font-medium mt-1">Records Matched</div></div>
-            <div className="bg-amber-50 rounded-xl p-4 border border-amber-100"><div className="text-2xl font-bold text-amber-600">{recon.length}</div><div className="text-[11px] text-gray-500 font-medium mt-1">Comparisons Run</div></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="bg-violet-50 rounded-xl p-4 border border-violet-100"><div className="text-xl lg:text-2xl font-bold text-violet-600">{avgMatchRate}%</div><div className="text-[11px] text-gray-500 font-medium mt-1">Avg Match Rate</div></div>
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-100"><div className="text-xl lg:text-2xl font-bold text-blue-600">{formatNum(recon.reduce((sum, r) => sum + r.matched_count, 0))}</div><div className="text-[11px] text-gray-500 font-medium mt-1">Records Matched</div></div>
+            <div className="bg-amber-50 rounded-xl p-4 border border-amber-100"><div className="text-xl lg:text-2xl font-bold text-amber-600">{recon.length}</div><div className="text-[11px] text-gray-500 font-medium mt-1">Comparisons Run</div></div>
           </div>
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <table className="w-full text-sm">
