@@ -264,10 +264,10 @@ export default function YardMap() {
   return (
     <div className="p-6 space-y-4">
       {/* Toolbar */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div className="flex items-center gap-4 flex-wrap">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 lg:p-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           {/* Search */}
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
+          <div className="relative flex-1 min-w-0 sm:max-w-sm">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -279,7 +279,7 @@ export default function YardMap() {
           </div>
 
           {/* Status filter pills */}
-          <div className="flex gap-1.5 flex-wrap">
+          <div className="flex gap-1.5 overflow-x-auto mobile-tabs pb-1 sm:pb-0 sm:flex-wrap">
             <button
               onClick={() => setStatusFilter('all')}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
@@ -357,7 +357,7 @@ export default function YardMap() {
       {/* Main content area */}
       <div className="flex gap-4" style={{ height: 'calc(100vh - 340px)', minHeight: '500px' }}>
         {/* Map */}
-        <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+        <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative h-[400px] sm:h-[500px] lg:h-auto">
           {/* Zone backgrounds */}
           <div className="absolute inset-0 flex">
             {[
@@ -415,7 +415,7 @@ export default function YardMap() {
           </div>
 
           {/* Docks */}
-          <div className="absolute right-2 top-8 bottom-8 z-10" style={{ width: '130px' }}>
+          <div className="absolute right-1 sm:right-2 top-8 bottom-8 z-10 w-[80px] sm:w-[110px] lg:w-[130px]">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 h-full auto-rows-fr">
               {docks.slice(0, 10).map((dock: Dock) => {
                 const assignedTruck = dock.currentTruckId
@@ -454,7 +454,7 @@ export default function YardMap() {
           </div>
 
           {/* Truck markers */}
-          <div className="absolute inset-0" style={{ right: '140px' }}>
+          <div className="absolute inset-0 right-[85px] sm:right-[115px] lg:right-[140px]">
             {filteredTrucks.map((truck: Truck) => {
               const xPercent = Math.min(92, Math.max(4, (truck.location.x / 1000) * 100));
               const yPercent = Math.min(90, Math.max(12, (truck.location.y / 800) * 100));
@@ -479,7 +479,7 @@ export default function YardMap() {
           </div>
 
           {/* Bottom info bar */}
-          <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 px-4 py-2 flex items-center justify-between z-20">
+          <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 px-2 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between z-20">
             <div className="flex items-center gap-4 text-[11px] text-gray-500">
               <span className="font-semibold text-gray-700">{filteredTrucks.length} truck{filteredTrucks.length !== 1 ? 's' : ''} shown</span>
               {searchQuery && <span className="text-blue-600">Filtered by &quot;{searchQuery}&quot;</span>}
