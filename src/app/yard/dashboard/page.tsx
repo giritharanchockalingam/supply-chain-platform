@@ -243,7 +243,7 @@ export default function YardDashboard() {
       {/* Dock Status Grid */}
       <div>
         <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4">Dock Status Overview</h2>
-        <div className="grid md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {docks.slice(0, 15).map((dock) => {
             const currentTruck = dock.currentTruckId ? trucks.find((t: Truck) => t.id === dock.currentTruckId) : null;
             const scheduledTruck = dock.scheduledTruckId ? trucks.find((t: Truck) => t.id === dock.scheduledTruckId) : null;
