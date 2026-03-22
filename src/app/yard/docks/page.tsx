@@ -14,7 +14,7 @@ export default function DockSchedulePage() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-[400px]">
+      <div className="p-4 lg:p-8 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading dock data...</p>
@@ -60,8 +60,8 @@ export default function DockSchedulePage() {
   };
 
   return (
-    <div className="p-8">
-      <div className="space-y-8">
+    <div className="p-4 lg:p-8">
+      <div className="space-y-6 lg:space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dock Schedule</h1>
@@ -71,10 +71,10 @@ export default function DockSchedulePage() {
         {/* Timeline View */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
-            <h2 className="text-2xl font-bold">Timeline View</h2>
+            <h2 className="text-xl lg:text-2xl font-bold">Timeline View</h2>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto mobile-table-wrapper">
             <div className="p-6 space-y-4 min-w-max">
               {docks.map((dock: Dock) => {
                 const blocks = getTimelineBlocks(dock);
@@ -128,8 +128,8 @@ export default function DockSchedulePage() {
 
         {/* Dock Details Cards */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Dock Details</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4">Dock Details</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6">
             {docks.map((dock) => {
               const currentTruck = dock.currentTruckId ? trucks.find(t => t.id === dock.currentTruckId) : null;
               const scheduledTruck = dock.scheduledTruckId ? trucks.find(t => t.id === dock.scheduledTruckId) : null;
@@ -234,7 +234,7 @@ export default function DockSchedulePage() {
         </div>
 
         {/* Dock KPIs */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-3 lg:gap-6">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-start justify-between">
               <div>
