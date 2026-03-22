@@ -197,34 +197,34 @@ export default function DemandDashboard() {
           {/* Exception Summary */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Exception Summary</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium text-slate-600">Stockout Risk</span>
                   <AlertTriangle className="text-red-600" size={18} />
                 </div>
-                <div className="text-2xl font-bold text-red-600">{exceptionCounts.stockout_risk}</div>
+                <div className="text-xl lg:text-2xl font-bold text-red-600">{exceptionCounts.stockout_risk}</div>
               </div>
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium text-slate-600">Demand Spike</span>
                   <TrendingUp className="text-amber-600" size={18} />
                 </div>
-                <div className="text-2xl font-bold text-amber-600">{exceptionCounts.demand_spike}</div>
+                <div className="text-xl lg:text-2xl font-bold text-amber-600">{exceptionCounts.demand_spike}</div>
               </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium text-slate-600">Missing Data</span>
                   <Package className="text-blue-600" size={18} />
                 </div>
-                <div className="text-2xl font-bold text-blue-600">{exceptionCounts.missing_data}</div>
+                <div className="text-xl lg:text-2xl font-bold text-blue-600">{exceptionCounts.missing_data}</div>
               </div>
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium text-slate-600">Quality Issue</span>
                   <AlertTriangle className="text-purple-600" size={18} />
                 </div>
-                <div className="text-2xl font-bold text-purple-600">{exceptionCounts.quality_issue}</div>
+                <div className="text-xl lg:text-2xl font-bold text-purple-600">{exceptionCounts.quality_issue}</div>
               </div>
             </div>
           </div>
