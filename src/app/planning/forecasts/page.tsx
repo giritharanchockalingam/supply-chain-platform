@@ -281,17 +281,17 @@ export default function ForecastManagementPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
               <p className="text-xs text-slate-600 mb-1">Mean Absolute Percentage Error</p>
-              <p className="text-2xl font-bold text-slate-900">{accuracyMetrics.mape}%</p>
+              <p className="text-xl lg:text-2xl font-bold text-slate-900">{accuracyMetrics.mape}%</p>
               <p className="text-xs text-slate-500 mt-1">Good forecast accuracy</p>
             </div>
             <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
               <p className="text-xs text-slate-600 mb-1">Mean Absolute Error</p>
-              <p className="text-2xl font-bold text-slate-900">{accuracyMetrics.mae}</p>
+              <p className="text-xl lg:text-2xl font-bold text-slate-900">{accuracyMetrics.mae}</p>
               <p className="text-xs text-slate-500 mt-1">units</p>
             </div>
             <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
               <p className="text-xs text-slate-600 mb-1">Forecast Bias</p>
-              <p className={`text-2xl font-bold ${accuracyMetrics.bias > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
+              <p className={`text-xl lg:text-2xl font-bold ${accuracyMetrics.bias > 0 ? 'text-amber-600' : 'text-slate-900'}`}>
                 {accuracyMetrics.bias > 0 ? '+' : ''}{accuracyMetrics.bias}
               </p>
               <p className="text-xs text-slate-500 mt-1">{accuracyMetrics.bias > 0 ? 'Over-forecast' : 'Under-forecast'}</p>
