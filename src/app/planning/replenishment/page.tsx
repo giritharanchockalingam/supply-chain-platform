@@ -243,7 +243,7 @@ export default function ReplenishmentPage() {
             )}
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto mobile-table-wrapper">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200">
@@ -347,11 +347,11 @@ export default function ReplenishmentPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
               <div>
                 <p className="text-sm text-slate-600 mb-1">Items Selected</p>
-                <p className="text-2xl font-bold text-slate-900">{selectedItems.length}</p>
+                <p className="text-xl lg:text-2xl font-bold text-slate-900">{selectedItems.length}</p>
               </div>
               <div>
                 <p className="text-sm text-slate-600 mb-1">Total Units</p>
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-xl lg:text-2xl font-bold text-slate-900">
                   {replenishments
                     .filter(r => selectedItems.includes(r.id))
                     .reduce((sum, r) => sum + r.recommendedQuantity, 0)
@@ -360,11 +360,11 @@ export default function ReplenishmentPage() {
               </div>
               <div>
                 <p className="text-sm text-slate-600 mb-1">Est. Unit Cost</p>
-                <p className="text-2xl font-bold text-slate-900">$35</p>
+                <p className="text-xl lg:text-2xl font-bold text-slate-900">$35</p>
               </div>
               <div className="bg-blue-100 rounded-lg p-4">
                 <p className="text-sm text-slate-600 mb-1">Est. Total Value</p>
-                <p className="text-2xl font-bold text-blue-600">${selectedItemsValue.toLocaleString()}</p>
+                <p className="text-xl lg:text-2xl font-bold text-blue-600">${selectedItemsValue.toLocaleString()}</p>
               </div>
             </div>
             <button className="bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition">
