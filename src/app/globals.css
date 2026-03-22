@@ -139,3 +139,65 @@ body {
 .dark ::-webkit-scrollbar-track { background: #1e293b; }
 .dark ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
 .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+
+/* ========== MOBILE-FIRST RESPONSIVE UTILITIES ========== */
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+.animate-slide-in-left {
+  animation: slide-in-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.mobile-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.mobile-table-wrapper table {
+  min-width: 600px;
+}
+.mobile-table-wrapper th:first-child,
+.mobile-table-wrapper td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: inherit;
+}
+.dark .mobile-table-wrapper th:first-child {
+  background-color: var(--table-header);
+}
+.dark .mobile-table-wrapper td:first-child {
+  background-color: var(--card-bg);
+}
+
+.mobile-tabs {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 0.25rem;
+}
+.mobile-tabs::-webkit-scrollbar {
+  display: none;
+}
+.mobile-tabs > * {
+  flex-shrink: 0;
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (max-width: 1023px) {
+  .recharts-responsive-container {
+    max-height: 250px !important;
+  }
+}
