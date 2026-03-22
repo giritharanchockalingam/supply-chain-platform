@@ -137,7 +137,7 @@ export default function SecurityPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <Filter size={16} className="text-gray-400" />
-            <div className="flex gap-1.5">
+            <div className="mobile-tabs flex gap-1.5">
               {['all', 'intact', 'tampered', 'broken', 'missing', 'verified'].map(s => (
                 <button key={s} onClick={() => setSealFilter(s)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${sealFilter === s ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                   {s === 'all' ? `All (${seals.length})` : `${s.charAt(0).toUpperCase() + s.slice(1)} (${seals.filter(x => x.status === s).length})`}
