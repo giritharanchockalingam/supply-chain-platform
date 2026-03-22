@@ -223,7 +223,7 @@ export default function DataIntakePage() {
         {/* Ingestion Job Table */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">Recent Ingestion Jobs</h2>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto mobile-table-wrapper">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200">
