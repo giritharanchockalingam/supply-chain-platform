@@ -50,7 +50,7 @@ export default function YardReports() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center min-h-[400px]">
+      <div className="p-4 lg:p-8 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading reports data...</p>
@@ -60,8 +60,8 @@ export default function YardReports() {
   }
 
   return (
-    <div className="p-8">
-      <div className="space-y-8">
+    <div className="p-4 lg:p-8">
+      <div className="space-y-6 lg:space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -106,7 +106,7 @@ export default function YardReports() {
         </div>
 
         {/* Charts */}
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-4 lg:gap-8">
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-4">Daily Throughput</h3>
             <ResponsiveContainer width="100%" height={300}>
