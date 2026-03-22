@@ -338,7 +338,7 @@ export default function YardMap() {
       </div>
 
       {/* KPI Strip */}
-      <div className="grid grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
           { label: 'In Yard', value: totalTrucks, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
           { label: 'Avg Dwell', value: `${Math.floor(avgDwellTime / 60)}h ${avgDwellTime % 60}m`, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
