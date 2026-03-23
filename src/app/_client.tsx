@@ -92,30 +92,30 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
   };
 
   const sidebarContent = () => (
-    <nav className="flex-1 px-3 py-6 space-y-6 overflow-y-auto overscroll-contain">
+    <nav className="flex-1 px-3 py-4 space-y-3 overflow-y-auto overscroll-contain scrollbar-thin">
       <div>
-        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Yard Management</h2>
-        <div className="space-y-1">{yardNavItems.map(i => navLink(i))}</div>
+        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Yard Management</h2>
+        <div className="space-y-0.5">{yardNavItems.map(i => navLink(i))}</div>
       </div>
       <div>
-        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Demand Planning</h2>
-        <div className="space-y-1">{planningNavItems.map(i => navLink(i))}</div>
+        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Demand Planning</h2>
+        <div className="space-y-0.5">{planningNavItems.map(i => navLink(i))}</div>
       </div>
       <div>
-        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">AI Intelligence</h2>
-        <div className="space-y-1">{navLink({ label: 'AI Command Center', href: '/ai', icon: Brain }, 'bg-purple-600')}</div>
+        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">AI Intelligence</h2>
+        <div className="space-y-0.5">{navLink({ label: 'AI Command Center', href: '/ai', icon: Brain }, 'bg-purple-600')}</div>
       </div>
       <div>
-        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Security</h2>
-        <div className="space-y-1">{navLink({ label: 'Trailer Security', href: '/security', icon: Shield }, 'bg-red-600')}</div>
+        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Security</h2>
+        <div className="space-y-0.5">{navLink({ label: 'Trailer Security', href: '/security', icon: Shield }, 'bg-red-600')}</div>
       </div>
       <div>
-        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Data Capture</h2>
-        <div className="space-y-1">{navLink({ label: 'Data Pipeline', href: '/data-capture', icon: ScanLine }, 'bg-cyan-600')}</div>
+        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Data Capture</h2>
+        <div className="space-y-0.5">{navLink({ label: 'Data Pipeline', href: '/data-capture', icon: ScanLine }, 'bg-cyan-600')}</div>
       </div>
       <div>
-        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Architecture</h2>
-        <div className="space-y-1">{navLink({ label: 'TOGAF Enterprise', href: '/architecture', icon: Layers }, 'bg-emerald-600')}</div>
+        <h2 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Architecture</h2>
+        <div className="space-y-0.5">{navLink({ label: 'TOGAF Enterprise', href: '/architecture', icon: Layers }, 'bg-emerald-600')}</div>
       </div>
     </nav>
   );
