@@ -203,7 +203,7 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
         <main className="flex-1 overflow-auto dark:text-gray-100 transition-colors pb-16 lg:pb-0">{children}</main>
 
         <footer className="hidden lg:flex bg-slate-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-6 py-3 items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-          <span>&copy; {new Date().getFullYear()} Giritharan Chockalingam. All rights reserved.</span>
+          <span>&copy; {new Date().getFullYear()} All rights reserved.</span>
           <span className="text-gray-400 dark:text-gray-500">Supply Chain Command Center v1.0</span>
         </footer>
       </div>
