@@ -205,15 +205,21 @@ export default function AICommandCenter({ currentPage, selectedTruckId, selected
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // Focus input when opened
+  // Focus input when opened or after AI finishes responding
   useEffect(() => {
     if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isLoading && isOpen) inputRef.current?.focus();
+  }, [isLoading, isOpen]);
 
   const handleSend = () => {
     if (inputValue.trim()) {
       sendMessage(inputValue);
       setInputValue('');
+      // Refocus input after sending
+      setTimeout(() => inputRef.current?.focus(), 50);
     }
   };
 
@@ -337,11 +343,16 @@ export default function AICommandCenter({ currentPage, selectedTruckId, selected
               <textarea
                 ref={inputRef}
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  // Auto-resize textarea
+                  e.target.style.height = 'auto';
+                  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                }}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about trucks, forecasts, dock operations..."
-                className="w-full resize-none rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2.5 text-sm max-h-24 min-h-[40px] outline-none"
-                rows={1}
+                className="w-full resize-none rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2.5 text-sm max-h-[120px] min-h-[44px] outline-none"
+                rows={2}
                 disabled={isLoading}
               />
             </div>

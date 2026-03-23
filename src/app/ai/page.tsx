@@ -173,8 +173,16 @@ export default function AIPage() {
     inputRef.current?.focus();
   }, []);
 
+  useEffect(() => {
+    if (!isLoading) inputRef.current?.focus();
+  }, [isLoading]);
+
   const handleSend = () => {
-    if (inputValue.trim()) { sendMessage(inputValue); setInputValue(''); }
+    if (inputValue.trim()) {
+      sendMessage(inputValue);
+      setInputValue('');
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -285,7 +293,11 @@ export default function AIPage() {
               <textarea
                 ref={inputRef}
                 value={inputValue}
-                onChange={e => setInputValue(e.target.value)}
+                onChange={e => {
+                  setInputValue(e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = Math.min(e.target.scrollHeight, 128) + 'px';
+                }}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about trucks, forecasts, dock procedures, carrier policies..."
                 className="w-full resize-none rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-4 py-3 text-sm max-h-32 min-h-[48px] outline-none transition-all"
