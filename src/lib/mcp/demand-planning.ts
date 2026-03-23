@@ -146,12 +146,13 @@ export class DemandPlanningServer extends BaseMCPServer {
         },
       },
     }, async (args) => {
-      let query = supabase.from('inventory_signals').select('*').order('report_date', { ascending: false }).limit(Number(args.limit) || 20);
+      let query = supabase.from('inventory_signals').select('*, products(name, sku)').order('report_date', { ascending: false }).limit(Number(args.limit) || 20);
       if (args.source) query = query.eq('source_type', args.source);
       if (args.product_id) query = query.eq('product_id', args.product_id);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
-      return createJsonResult({ signals: data, count: data?.length || 0 });
+      const enriched = (data || []).map((s: Record<string, unknown>) => ({ ...s, product_name: (s.products as Record<string, unknown>)?.name || s.product_id, product_sku: (s.products as Record<string, unknown>)?.sku || null, products: undefined }));
+      return createJsonResult({ signals: enriched, count: enriched.length });
     });
 
     this.registerTool({
@@ -161,12 +162,13 @@ export class DemandPlanningServer extends BaseMCPServer {
     }, async () => {
       const { data, error } = await supabase
         .from('replenishments')
-        .select('*')
+        .select('*, products(name, sku)')
         .in('urgency', ['critical', 'high'])
         .eq('status', 'pending')
         .order('urgency', { ascending: false });
       if (error) return createErrorResult(error.message);
-      return createJsonResult({ low_stock_alerts: data, count: data?.length || 0 });
+      const enriched = (data || []).map((r: Record<string, unknown>) => ({ ...r, product_name: (r.products as Record<string, unknown>)?.name || r.product_id, product_sku: (r.products as Record<string, unknown>)?.sku || null, products: undefined }));
+      return createJsonResult({ low_stock_alerts: enriched, count: enriched.length });
     });
 
     // ---- REPLENISHMENT TOOLS ----
@@ -182,12 +184,13 @@ export class DemandPlanningServer extends BaseMCPServer {
         },
       },
     }, async (args) => {
-      let query = supabase.from('replenishments').select('*').order('created_at', { ascending: false }).limit(Number(args.limit) || 25);
+      let query = supabase.from('replenishments').select('*, products(name, sku)').order('created_at', { ascending: false }).limit(Number(args.limit) || 25);
       if (args.status) query = query.eq('status', args.status);
       if (args.urgency) query = query.eq('urgency', args.urgency);
       const { data, error } = await query;
       if (error) return createErrorResult(error.message);
-      return createJsonResult({ replenishments: data, count: data?.length || 0 });
+      const enriched = (data || []).map((r: Record<string, unknown>) => ({ ...r, product_name: (r.products as Record<string, unknown>)?.name || r.product_id, product_sku: (r.products as Record<string, unknown>)?.sku || null, products: undefined }));
+      return createJsonResult({ replenishments: enriched, count: enriched.length });
     });
 
     this.registerTool({
