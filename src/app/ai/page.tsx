@@ -66,7 +66,7 @@ function renderBold(text: string, isUser: boolean): React.ReactNode {
     const m = remaining.match(/^([\s\S]*?)\*\*(.+?)\*\*([\s\S]*)/);
     if (m) {
       if (m[1]) parts.push(<span key={k++}>{m[1]}</span>);
-      parts.push(<strong key={k++} className={isUser ? 'font-bold' : 'font-semibold text-gray-900'}>{m[2]}</strong>);
+      parts.push(<strong key={k++} className={isUser ? 'font-bold' : 'font-semibold text-gray-900 dark:text-white'}>{m[2]}</strong>);
       remaining = m[3];
       continue;
     }
@@ -95,7 +95,7 @@ function Message({ message }: { message: AIMessage }) {
           className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed shadow-sm ${
             isUser
               ? 'bg-blue-600 text-white rounded-br-md'
-              : 'bg-white text-gray-800 rounded-bl-md border border-gray-100'
+              : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-md border border-gray-100 dark:border-gray-700'
           }`}
         >
           <div className="space-y-0.5">
@@ -218,33 +218,33 @@ export default function AIPage() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 bg-gradient-to-b from-slate-50 to-white">
+        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 bg-gradient-to-b from-slate-50 to-white dark:from-gray-950 dark:to-gray-900">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full max-w-2xl mx-auto text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mb-6">
-                <Sparkles size={36} className="text-blue-600" />
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-2xl flex items-center justify-center mb-6">
+                <Sparkles size={36} className="text-blue-600 dark:text-blue-400" />
               </div>
-              <h2 className="text-xl lg:text-2xl font-bold text-gray-800 mb-2">Supply Chain AI Assistant</h2>
-              <p className="text-gray-500 mb-8 max-w-lg">
+              <h2 className="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white mb-2">Supply Chain AI Assistant</h2>
+              <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-lg">
                 Ask me anything about your supply chain. I query real-time data through 40+ MCP tools across yard operations and demand planning, grounded by RAG knowledge search.
               </p>
 
               {/* Architecture Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 w-full max-w-xl">
-                <div className="bg-white rounded-xl border border-gray-100 p-4 text-left shadow-sm">
-                  <Server size={20} className="text-blue-600 mb-2" />
-                  <h3 className="text-sm font-bold text-gray-800">MCP Servers</h3>
-                  <p className="text-xs text-gray-500 mt-1">2 domain servers with 40+ tools for real-time data</p>
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-left shadow-sm">
+                  <Server size={20} className="text-blue-600 dark:text-blue-400 mb-2" />
+                  <h3 className="text-sm font-bold text-gray-800 dark:text-white">MCP Servers</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">2 domain servers with 40+ tools for real-time data</p>
                 </div>
-                <div className="bg-white rounded-xl border border-gray-100 p-4 text-left shadow-sm">
-                  <BookOpen size={20} className="text-emerald-600 mb-2" />
-                  <h3 className="text-sm font-bold text-gray-800">RAG Knowledge</h3>
-                  <p className="text-xs text-gray-500 mt-1">8 documents, 27 sections with pgvector search</p>
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-left shadow-sm">
+                  <BookOpen size={20} className="text-emerald-600 dark:text-emerald-400 mb-2" />
+                  <h3 className="text-sm font-bold text-gray-800 dark:text-white">RAG Knowledge</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">8 documents, 27 sections with pgvector search</p>
                 </div>
-                <div className="bg-white rounded-xl border border-gray-100 p-4 text-left shadow-sm">
-                  <Zap size={20} className="text-purple-600 mb-2" />
-                  <h3 className="text-sm font-bold text-gray-800">Multi-LLM</h3>
-                  <p className="text-xs text-gray-500 mt-1">Claude, OpenAI, Groq with circuit breaker failover</p>
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 text-left shadow-sm">
+                  <Zap size={20} className="text-purple-600 dark:text-purple-400 mb-2" />
+                  <h3 className="text-sm font-bold text-gray-800 dark:text-white">Multi-LLM</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Claude, OpenAI, Groq with circuit breaker failover</p>
                 </div>
               </div>
 
@@ -256,7 +256,7 @@ export default function AIPage() {
                     <button
                       key={i}
                       onClick={() => sendMessage(action.query)}
-                      className="text-left px-4 py-3 bg-white hover:bg-blue-50 rounded-xl text-sm text-gray-700 hover:text-blue-700 transition-colors border border-gray-100 hover:border-blue-200 shadow-sm"
+                      className="text-left px-4 py-3 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-200 hover:text-blue-700 dark:hover:text-blue-400 transition-colors border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-600 shadow-sm"
                     >
                       <span className="font-medium">{action.label}</span>
                     </button>
@@ -272,10 +272,10 @@ export default function AIPage() {
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
                     <Bot size={20} className="text-white" />
                   </div>
-                  <div className="bg-white rounded-2xl rounded-bl-md px-5 py-3.5 flex items-center gap-3 shadow-sm border border-gray-100">
+                  <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-bl-md px-5 py-3.5 flex items-center gap-3 shadow-sm border border-gray-100 dark:border-gray-700">
                     <Loader2 size={18} className="text-blue-600 animate-spin" />
                     <div>
-                      <span className="text-sm text-gray-600">Querying supply chain data...</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">Querying supply chain data...</span>
                       <p className="text-xs text-gray-400 mt-0.5">Running MCP tools and analyzing results</p>
                     </div>
                   </div>
@@ -287,7 +287,7 @@ export default function AIPage() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-gray-200 bg-white px-8 py-4">
+        <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-8 py-4">
           <div className="max-w-4xl mx-auto flex items-end gap-3">
             <div className="flex-1 relative">
               <textarea
@@ -300,7 +300,7 @@ export default function AIPage() {
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about trucks, forecasts, dock procedures, carrier policies..."
-                className="w-full resize-none rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 px-4 py-3 text-sm max-h-32 min-h-[48px] outline-none transition-all"
+                className="w-full resize-none rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 px-4 py-3 text-sm max-h-32 min-h-[48px] outline-none transition-all"
                 rows={1}
                 disabled={isLoading}
               />
@@ -327,33 +327,33 @@ export default function AIPage() {
       </div>
 
       {/* Right Sidebar - Knowledge Base & Architecture Info */}
-      <div className="w-80 border-l border-gray-200 bg-white overflow-y-auto hidden xl:block">
+      <div className="w-80 border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-y-auto hidden xl:block">
         <div className="p-6 space-y-6">
           <div>
-            <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <Server size={16} className="text-blue-600" /> MCP Tool Servers
+            <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+              <Server size={16} className="text-blue-600 dark:text-blue-400" /> MCP Tool Servers
             </h3>
             <div className="space-y-2">
-              <div className="bg-blue-50 rounded-lg p-3">
+              <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-blue-700">Yard Operations</span>
-                  <span className="text-[10px] bg-blue-200 text-blue-800 px-1.5 py-0.5 rounded">17 tools</span>
+                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300">Yard Operations</span>
+                  <span className="text-[10px] bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-1.5 py-0.5 rounded">17 tools</span>
                 </div>
-                <p className="text-[10px] text-blue-600 mt-1">Trucks, docks, gates, exceptions, carriers, metrics</p>
+                <p className="text-[10px] text-blue-600 dark:text-blue-400 mt-1">Trucks, docks, gates, exceptions, carriers, metrics</p>
               </div>
-              <div className="bg-emerald-50 rounded-lg p-3">
+              <div className="bg-emerald-50 dark:bg-emerald-950 rounded-lg p-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-700">Demand Planning</span>
-                  <span className="text-[10px] bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded">14 tools</span>
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">Demand Planning</span>
+                  <span className="text-[10px] bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200 px-1.5 py-0.5 rounded">14 tools</span>
                 </div>
-                <p className="text-[10px] text-emerald-600 mt-1">Forecasts, inventory, replenishment, products, signals</p>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1">Forecasts, inventory, replenishment, products, signals</p>
               </div>
             </div>
           </div>
 
           <div>
-            <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <BookOpen size={16} className="text-emerald-600" /> Knowledge Base (RAG)
+            <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+              <BookOpen size={16} className="text-emerald-600 dark:text-emerald-400" /> Knowledge Base (RAG)
             </h3>
             <div className="space-y-1.5">
               {[
@@ -366,31 +366,31 @@ export default function AIPage() {
                 { icon: Clock, label: 'Yard Capacity Guide', type: 'sop' },
                 { icon: Search, label: 'Compliance FAQ', type: 'faq' },
               ].map((doc, i) => (
-                <div key={i} className="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-gray-600 hover:bg-gray-50">
+                <div key={i} className="flex items-center gap-2 px-2 py-1.5 rounded text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
                   <doc.icon size={12} className="text-gray-400 flex-shrink-0" />
                   <span className="flex-1 truncate">{doc.label}</span>
-                  <span className="text-[9px] text-gray-400 bg-gray-100 px-1 rounded">{doc.type}</span>
+                  <span className="text-[9px] text-gray-400 bg-gray-100 dark:bg-gray-800 px-1 rounded">{doc.type}</span>
                 </div>
               ))}
             </div>
           </div>
 
           <div>
-            <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <Zap size={16} className="text-purple-600" /> LLM Routing
+            <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+              <Zap size={16} className="text-purple-600 dark:text-purple-400" /> LLM Routing
             </h3>
             <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between bg-green-50 rounded-lg px-3 py-2">
-                <span className="font-medium text-green-700">Simple</span>
-                <span className="text-green-600">Groq (Llama 3.3)</span>
+              <div className="flex items-center justify-between bg-green-50 dark:bg-green-950 rounded-lg px-3 py-2">
+                <span className="font-medium text-green-700 dark:text-green-300">Simple</span>
+                <span className="text-green-600 dark:text-green-400">Groq (Llama 3.3)</span>
               </div>
-              <div className="flex items-center justify-between bg-amber-50 rounded-lg px-3 py-2">
-                <span className="font-medium text-amber-700">Medium</span>
-                <span className="text-amber-600">OpenAI (GPT-4o)</span>
+              <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-950 rounded-lg px-3 py-2">
+                <span className="font-medium text-amber-700 dark:text-amber-300">Medium</span>
+                <span className="text-amber-600 dark:text-amber-400">OpenAI (GPT-4o)</span>
               </div>
-              <div className="flex items-center justify-between bg-red-50 rounded-lg px-3 py-2">
-                <span className="font-medium text-red-700">Complex</span>
-                <span className="text-red-600">Claude (Sonnet)</span>
+              <div className="flex items-center justify-between bg-red-50 dark:bg-red-950 rounded-lg px-3 py-2">
+                <span className="font-medium text-red-700 dark:text-red-300">Complex</span>
+                <span className="text-red-600 dark:text-red-400">Claude (Sonnet)</span>
               </div>
             </div>
             <p className="text-[10px] text-gray-400 mt-2">Circuit breaker failover with 30s reset timeout</p>
