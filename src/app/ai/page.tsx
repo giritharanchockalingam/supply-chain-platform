@@ -198,11 +198,11 @@ export default function AIPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-white bg-opacity-20 px-3 py-1.5 rounded-lg">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span className="text-xs font-semibold text-white">System Online</span>
+              <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span className="text-xs font-semibold text-gray-700">System Online</span>
               </div>
-              <button onClick={clearMessages} className="px-3 py-1.5 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg text-sm font-semibold text-white transition-colors flex items-center gap-2">
+              <button onClick={clearMessages} className="px-3 py-1.5 bg-white hover:bg-gray-100 rounded-lg text-sm font-semibold text-gray-700 transition-colors flex items-center gap-2 shadow-sm">
                 <Trash2 size={14} /> Clear
               </button>
             </div>
