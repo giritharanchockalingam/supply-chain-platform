@@ -189,7 +189,7 @@ export default function ArchitecturePage() {
     switch (status) {
       case 'complete': return <span className="flex items-center gap-1 text-emerald-400 text-xs font-semibold"><CheckCircle size={14} /> Complete</span>;
       case 'in_progress': return <span className="flex items-center gap-1 text-amber-400 text-xs font-semibold"><Clock size={14} /> In Progress</span>;
-      case 'planned': return <span className="flex items-center gap-1 text-slate-400 text-xs font-semibold"><Circle size={14} /> Planned</span>;
+      case 'planned': return <span className="flex items-center gap-1 text-gray-500 dark:text-slate-400 text-xs font-semibold"><Circle size={14} /> Planned</span>;
     }
   };
 
@@ -198,7 +198,7 @@ export default function ArchitecturePage() {
       case 'connected': return <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/30">Connected</span>;
       case 'available': return <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-bold rounded-full border border-blue-500/30">Available</span>;
       case 'coming_soon': return <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-bold rounded-full border border-amber-500/30">Coming Soon</span>;
-      case 'placeholder': return <span className="px-2 py-0.5 bg-slate-500/20 text-slate-400 text-xs font-bold rounded-full border border-slate-500/30">Placeholder</span>;
+      case 'placeholder': return <span className="px-2 py-0.5 bg-slate-500/20 text-gray-500 dark:text-slate-400 text-xs font-bold rounded-full border border-slate-500/30">Placeholder</span>;
     }
   };
 
@@ -207,13 +207,13 @@ export default function ArchitecturePage() {
       'Free': 'text-emerald-300', 'Freemium': 'text-blue-300', 'Paid': 'text-amber-300',
       'Enterprise': 'text-purple-300', 'Built-in': 'text-cyan-300',
     };
-    return <span className={`text-[10px] font-bold uppercase tracking-wider ${colors[tier] || 'text-slate-400'}`}>{tier}</span>;
+    return <span className={`text-[10px] font-bold uppercase tracking-wider ${colors[tier] || 'text-gray-500 dark:text-slate-400'}`}>{tier}</span>;
   };
 
   return (
-    <div className="dark min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white">
-      {/* Ambient glow effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-gray-900 dark:text-white">
+      {/* Ambient glow effects — dark mode only */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden hidden dark:block">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
         <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl" />
@@ -227,10 +227,10 @@ export default function ArchitecturePage() {
               <Layers size={24} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-700 to-purple-700 dark:from-white dark:via-blue-100 dark:to-purple-200 bg-clip-text text-transparent">
                 Enterprise Architecture
               </h1>
-              <p className="text-slate-400 text-sm">TOGAF ADM — Supply Chain Command Center</p>
+              <p className="text-gray-500 dark:text-slate-400 text-sm">TOGAF ADM — Supply Chain Command Center</p>
             </div>
           </div>
 
@@ -244,11 +244,11 @@ export default function ArchitecturePage() {
               { label: 'ADRs', value: 6, sub: 'Decisions', color: 'from-purple-500 to-violet-600' },
               { label: 'Diagrams', value: 4, sub: 'Domains', color: 'from-rose-500 to-pink-600' },
             ].map((stat, i) => (
-              <div key={i} className="flex-1 min-w-[140px] bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-                <p className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">{stat.label}</p>
+              <div key={i} className="flex-1 min-w-[140px] bg-white dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-xl shadow-sm dark:shadow-none p-4">
+                <p className="text-[11px] text-gray-500 dark:text-slate-400 font-medium uppercase tracking-wider">{stat.label}</p>
                 <div className="flex items-baseline gap-1.5 mt-1">
                   <span className={`text-2xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>{stat.value}</span>
-                  <span className="text-xs text-slate-500">{stat.sub}</span>
+                  <span className="text-xs text-gray-400 dark:text-slate-500">{stat.sub}</span>
                 </div>
               </div>
             ))}
@@ -256,7 +256,7 @@ export default function ArchitecturePage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-1 mb-8 bg-white/5 backdrop-blur-sm rounded-xl p-1 border border-white/10 w-fit">
+        <div className="flex gap-1 mb-8 bg-white dark:bg-white/5 backdrop-blur-sm rounded-xl p-1 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none w-fit">
           {[
             { id: 'overview', label: 'Overview', icon: Target },
             { id: 'adm', label: 'ADM Tracker', icon: Workflow },
@@ -269,7 +269,7 @@ export default function ArchitecturePage() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5'
               }`}
             >
               <tab.icon size={16} />
@@ -287,7 +287,7 @@ export default function ArchitecturePage() {
                 <Target size={20} className="text-blue-400" />
                 Architecture Vision
               </h2>
-              <p className="text-slate-300 leading-relaxed max-w-3xl">
+              <p className="text-gray-600 dark:text-slate-300 leading-relaxed max-w-3xl">
                 A unified, AI-driven supply chain command center that provides real-time yard visibility,
                 predictive demand planning, and autonomous operational decision-making. The platform integrates
                 multi-LLM intelligence (Claude, GPT-4o, Groq) with domain-specific MCP tools to deliver
@@ -312,7 +312,7 @@ export default function ArchitecturePage() {
                   <button
                     key={phase.id}
                     onClick={() => { setSelectedPhase(phase.id); setActiveTab('adm'); }}
-                    className={`relative group bg-white/5 border border-white/10 rounded-xl p-4 text-center hover:bg-white/10 hover:border-white/20 transition-all hover:scale-105 ${
+                    className={`relative group bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-4 text-center hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-200 dark:border-white/20 transition-all hover:scale-105 ${
                       phase.status === 'complete' ? 'ring-1 ring-emerald-500/30' :
                       phase.status === 'in_progress' ? 'ring-1 ring-amber-500/30' : ''
                     }`}
@@ -322,8 +322,8 @@ export default function ArchitecturePage() {
                        phase.status === 'in_progress' ? <Clock size={18} /> :
                        <Circle size={18} />}
                     </div>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase">{phase.phase}</p>
-                    <p className="text-xs text-slate-300 mt-0.5 line-clamp-2">{phase.title}</p>
+                    <p className="text-[10px] text-gray-500 dark:text-slate-400 font-bold uppercase">{phase.phase}</p>
+                    <p className="text-xs text-gray-600 dark:text-slate-300 mt-0.5 line-clamp-2">{phase.title}</p>
                   </button>
                 ))}
               </div>
@@ -340,12 +340,12 @@ export default function ArchitecturePage() {
                   { label: 'Placeholder', count: totalIntegrations - connectedCount - availableCount - comingSoonCount, total: totalIntegrations, color: 'from-slate-500 to-gray-500', bg: 'bg-slate-500/10', border: 'border-slate-500/20' },
                 ].map((item, i) => (
                   <div key={i} className={`${item.bg} border ${item.border} rounded-xl p-5 backdrop-blur-sm`}>
-                    <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{item.label}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 font-medium uppercase tracking-wider">{item.label}</p>
                     <div className="flex items-baseline gap-2 mt-1">
                       <span className={`text-3xl font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}>{item.count}</span>
-                      <span className="text-slate-500 text-sm">/ {item.total}</span>
+                      <span className="text-gray-400 dark:text-slate-500 text-sm">/ {item.total}</span>
                     </div>
-                    <div className="w-full h-1.5 bg-white/5 rounded-full mt-3 overflow-hidden">
+                    <div className="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full mt-3 overflow-hidden">
                       <div
                         className={`h-full bg-gradient-to-r ${item.color} rounded-full transition-all`}
                         style={{ width: `${(item.count / item.total) * 100}%` }}
@@ -366,15 +366,15 @@ export default function ArchitecturePage() {
                   { domain: 'Data', icon: Database, color: 'from-amber-500 to-orange-600', desc: 'Supabase PostgreSQL (21+ tables), supply_chain schema, pgvector embeddings, and PostgREST API layer.', artifacts: 4 },
                   { domain: 'Technology', icon: Server, color: 'from-rose-500 to-pink-600', desc: 'Vercel Edge CDN, Supabase Cloud, multi-provider LLM inference, and CI/CD pipeline with GitHub Actions.', artifacts: 4 },
                 ].map((d, i) => (
-                  <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/8 transition-all group">
+                  <div key={i} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-6 hover:bg-gray-50 dark:hover:bg-white/8 transition-all group">
                     <div className="flex items-start gap-4">
                       <div className={`p-3 bg-gradient-to-br ${d.color} rounded-xl shadow-lg group-hover:scale-110 transition-transform`}>
                         <d.icon size={22} />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-bold text-white">{d.domain} Architecture</h3>
-                        <p className="text-sm text-slate-400 mt-1 leading-relaxed">{d.desc}</p>
-                        <p className="text-xs text-slate-500 mt-2">{d.artifacts} artifacts defined</p>
+                        <h3 className="font-bold text-gray-900 dark:text-white">{d.domain} Architecture</h3>
+                        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1 leading-relaxed">{d.desc}</p>
+                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">{d.artifacts} artifacts defined</p>
                       </div>
                     </div>
                   </div>
@@ -390,13 +390,13 @@ export default function ArchitecturePage() {
             {admPhases.map((phase) => (
               <div
                 key={phase.id}
-                className={`bg-white/5 border border-white/10 rounded-xl overflow-hidden transition-all ${
+                className={`bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden transition-all ${
                   selectedPhase === phase.id ? 'ring-1 ring-blue-500/50' : ''
                 }`}
               >
                 <button
                   onClick={() => setSelectedPhase(selectedPhase === phase.id ? null : phase.id)}
-                  className="w-full flex items-center gap-4 p-5 text-left hover:bg-white/5 transition-colors"
+                  className="w-full flex items-center gap-4 p-5 text-left hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                 >
                   <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${phase.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
                     {phase.status === 'complete' ? <CheckCircle size={20} /> :
@@ -405,21 +405,21 @@ export default function ArchitecturePage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3">
-                      <span className="text-xs font-bold text-slate-500 uppercase">{phase.phase}</span>
+                      <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase">{phase.phase}</span>
                       {statusBadge(phase.status)}
                     </div>
-                    <h3 className="font-bold text-white mt-0.5">{phase.title}</h3>
+                    <h3 className="font-bold text-gray-900 dark:text-white mt-0.5">{phase.title}</h3>
                   </div>
-                  <div className="text-xs text-slate-500">{phase.artifacts.length} artifacts</div>
-                  <ChevronRight size={18} className={`text-slate-500 transition-transform ${selectedPhase === phase.id ? 'rotate-90' : ''}`} />
+                  <div className="text-xs text-gray-400 dark:text-slate-500">{phase.artifacts.length} artifacts</div>
+                  <ChevronRight size={18} className={`text-gray-400 dark:text-slate-500 transition-transform ${selectedPhase === phase.id ? 'rotate-90' : ''}`} />
                 </button>
 
                 {selectedPhase === phase.id && (
-                  <div className="border-t border-white/10 p-5 bg-white/[0.02]">
-                    <p className="text-sm text-slate-300 leading-relaxed mb-4">{phase.description}</p>
+                  <div className="border-t border-gray-200 dark:border-white/10 p-5 bg-gray-50 dark:bg-white/[0.02]">
+                    <p className="text-sm text-gray-600 dark:text-slate-300 leading-relaxed mb-4">{phase.description}</p>
                     <div className="grid grid-cols-2 gap-2">
                       {phase.artifacts.map((artifact, i) => (
-                        <div key={i} className="flex items-center gap-2 text-sm text-slate-400 bg-white/5 rounded-lg px-3 py-2">
+                        <div key={i} className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-white/5 rounded-lg px-3 py-2">
                           <FileText size={14} className="text-blue-400 flex-shrink-0" />
                           {artifact}
                         </div>
@@ -437,7 +437,7 @@ export default function ArchitecturePage() {
           <div className="flex gap-6">
             {/* Category Sidebar */}
             <div className="w-56 flex-shrink-0 space-y-1">
-              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 px-3">Categories</h3>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3 px-3">Categories</h3>
               {integrationCategories.map(cat => {
                 const count = cat.id === 'all' ? integrations.length : integrations.filter(i => i.category === cat.id).length;
                 return (
@@ -447,18 +447,18 @@ export default function ArchitecturePage() {
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
                       integrationFilter === cat.id
                         ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-white border border-transparent'
+                        : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white border border-transparent'
                     }`}
                   >
                     <cat.icon size={16} className="flex-shrink-0" />
                     <span className="flex-1 text-left">{cat.label}</span>
-                    <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">{count}</span>
+                    <span className="text-[10px] bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded-full">{count}</span>
                   </button>
                 );
               })}
 
-              <div className="border-t border-white/10 mt-4 pt-4">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 px-3">Status</h3>
+              <div className="border-t border-gray-200 dark:border-white/10 mt-4 pt-4">
+                <h3 className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3 px-3">Status</h3>
                 {[
                   { id: 'all', label: 'All Status', count: totalIntegrations },
                   { id: 'connected', label: 'Connected', count: connectedCount },
@@ -471,12 +471,12 @@ export default function ArchitecturePage() {
                     onClick={() => setStatusFilter(s.id as typeof statusFilter)}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
                       statusFilter === s.id
-                        ? 'bg-white/10 text-white border border-white/20'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-white border border-transparent'
+                        ? 'bg-gray-100 dark:bg-white/10 text-white border border-gray-200 dark:border-white/20'
+                        : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white border border-transparent'
                     }`}
                   >
                     <span className="flex-1 text-left">{s.label}</span>
-                    <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">{s.count}</span>
+                    <span className="text-[10px] bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded-full">{s.count}</span>
                   </button>
                 ))}
               </div>
@@ -485,43 +485,43 @@ export default function ArchitecturePage() {
             {/* Integration Cards */}
             <div className="flex-1 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredIntegrations.map((integ, i) => (
-                <div key={i} className={`bg-white/5 border rounded-xl p-5 backdrop-blur-sm transition-all hover:bg-white/8 hover:scale-[1.02] ${
+                <div key={i} className={`bg-gray-100 dark:bg-white/5 border rounded-xl p-5 backdrop-blur-sm transition-all hover:bg-gray-50 dark:hover:bg-white/8 hover:scale-[1.02] ${
                   integ.status === 'connected' ? 'border-emerald-500/20' :
                   integ.status === 'available' ? 'border-blue-500/20' :
-                  'border-white/10'
+                  'border-gray-200 dark:border-white/10'
                 }`}>
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="font-bold text-white flex items-center gap-2">
+                      <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         {integ.name}
-                        {integ.url && <ExternalLink size={12} className="text-slate-500" />}
+                        {integ.url && <ExternalLink size={12} className="text-gray-400 dark:text-slate-500" />}
                       </h3>
                       {tierBadge(integ.tier)}
                     </div>
                     {integrationStatusBadge(integ.status)}
                   </div>
-                  <p className="text-xs text-slate-400 leading-relaxed mb-3 line-clamp-2">{integ.description}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 leading-relaxed mb-3 line-clamp-2">{integ.description}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {integ.capabilities.map((cap, j) => (
-                      <span key={j} className="px-2 py-0.5 bg-white/5 text-[10px] text-slate-300 rounded-md border border-white/10">{cap}</span>
+                      <span key={j} className="px-2 py-0.5 bg-gray-100 dark:bg-white/5 text-[10px] text-gray-600 dark:text-slate-300 rounded-md border border-gray-200 dark:border-white/10">{cap}</span>
                     ))}
                   </div>
                   {integ.status === 'connected' && (
-                    <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between">
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10 flex items-center justify-between">
                       <span className="text-[10px] text-emerald-400 flex items-center gap-1"><Zap size={10} /> Live</span>
-                      <button className="text-[10px] text-slate-500 hover:text-red-400 transition-colors">Disconnect</button>
+                      <button className="text-[10px] text-gray-400 dark:text-slate-500 hover:text-red-400 transition-colors">Disconnect</button>
                     </div>
                   )}
                   {integ.status === 'available' && (
-                    <div className="mt-3 pt-3 border-t border-white/10">
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10">
                       <button className="w-full text-xs font-medium bg-blue-600/20 text-blue-300 rounded-lg py-1.5 hover:bg-blue-600/30 transition-colors border border-blue-500/30">
                         Configure & Connect
                       </button>
                     </div>
                   )}
                   {(integ.status === 'coming_soon' || integ.status === 'placeholder') && (
-                    <div className="mt-3 pt-3 border-t border-white/10">
-                      <p className="text-[10px] text-slate-500 text-center">
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-white/10">
+                      <p className="text-[10px] text-gray-400 dark:text-slate-500 text-center">
                         {integ.status === 'coming_soon' ? 'Coming in a future release' : 'Planned for Phase 3'}
                       </p>
                     </div>
@@ -539,7 +539,7 @@ export default function ArchitecturePage() {
               {['All', 'Business', 'Application', 'Data', 'Technology'].map(domain => (
                 <button
                   key={domain}
-                  className="px-4 py-2 text-sm rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:text-white transition-all"
+                  className="px-4 py-2 text-sm rounded-lg bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white transition-all"
                 >
                   {domain}
                 </button>
@@ -812,7 +812,7 @@ export default function ArchitecturePage() {
                   )
                 },
               ].map((d, i) => (
-                <div key={i} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all">
+                <div key={i} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden hover:border-gray-200 dark:border-white/20 transition-all">
                   <div className={`bg-gradient-to-r ${d.color} p-5`}>
                     <div className="flex items-center gap-2 mb-1">
                       <d.icon size={18} />
