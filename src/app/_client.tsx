@@ -142,7 +142,7 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Desktop sidebar */}
-      <div className={`hidden lg:flex bg-slate-900 text-white transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'} flex-shrink-0 flex-col border-r border-slate-700`}>
+      <div className={`hidden lg:flex bg-slate-900 text-white transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'} flex-shrink-0 flex-col border-r border-slate-700 h-screen sticky top-0`}>
         <div className="flex items-center justify-between h-20 px-4 border-b border-slate-700">
           {sidebarOpen && <h1 className="text-lg font-bold truncate">Supply Chain</h1>}
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-slate-800 rounded-lg">{sidebarOpen ? <X size={20} /> : <Menu size={20} />}</button>
